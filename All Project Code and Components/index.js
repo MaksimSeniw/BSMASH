@@ -124,18 +124,21 @@ app.post('/register', async (req, res) => {
                     console.log(user);
                     res.redirect('/discover');
                 }
-                else
-                {
-                    res.render('pages/login',{
-                    error: true,
-                    message: "Incorrect Password"
-                    });
-                }
+                // else
+                // {
+                //     res.render('pages/login',{
+                //     error: true,
+                //     message: "Incorrect Password"
+                //     });
+                // }
             })
             // if query execution fails
             // send error message
             .catch(function (err) {
-                res.redirect(`/register?error=true&message=${encodeURIComponent("User not found")}`)
+              res.render('pages/login',{
+                error: true,
+                message: "Incorrect Username or Password"
+                });
                 return console.log(err);
             });
         });
