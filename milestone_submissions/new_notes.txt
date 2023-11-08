@@ -1,1 +1,4 @@
 put notes in here
+
+11/7: I added in some tables to the insert.sql file.-Hyder
+
