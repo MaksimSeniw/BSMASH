@@ -186,7 +186,7 @@ app.get('/discover', (req, res) => {
   ]; 
 
  
-  res.render('discover', { results });
+  res.render('pages/discover', { results });
 });
 
       
