@@ -8,18 +8,21 @@
       <% for (let event of results) { %>
         <div class="col-md-4 mb-4">
           <div class="card">
-            <% if (event.images && event.images.length > 0) { %>
-              <img src="<%= event.images[0].url %>" class="card-img-top" alt="<%= event.name %>">
+            <% if (event && event.dates && event.dates.start) { %>
+              <img src="<%= event.images[0]?.url || '/default-image.jpg' %>" class="card-img-top" alt="<%= event.name %>">
+              <div class="card-body">
+                <h5 class="card-title"><%= event.name %></h5>
+                <p class="card-text">
+                  Date and Time:
+                  <%= event.dates.start.localDate || 'N/A' %>
+                  <%= event.dates.start.localTime || 'N/A' %>
+                </p>
+                <a href="<%= event.url %>" class="btn btn-primary">Book Now</a>
+              </div>
             <% } else { %>
-              <img src="/default-image.jpg" class="card-img-top" alt="Default Image">
+              
+              <p>Event information is not available.</p>
             <% } %>
-            <div class="card-body">
-              <h5 class="card-title"><%= event.name %></h5>
-              <p class="card-text">
-                Date and Time: <%= event.dates.start.localDate %> <%= event.dates.start.localTime %>
-              </p>
-              <a href="<%= event.url %>" class="btn btn-primary">Book Now</a>
-            </div>
           </div>
         </div>
       <% } %>
