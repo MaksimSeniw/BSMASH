@@ -168,6 +168,28 @@ app.get('/home', (req, res) => {
         }); 
       });
       
+//discover
+app.get('/discover', (req, res) => {
+ 
+  const results = [
+    {
+      name: "Event 1",
+      date: "2023-11-15",
+      description: "This is the first event description.",
+    },
+    {
+      name: "Event 2",
+      date: "2023-12-05",
+      description: "This is the second event description.",
+    },
+    // the above is just an example; you could add more
+  ]; 
+
+ 
+  res.render('discover', { results });
+});
+
+      
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->
