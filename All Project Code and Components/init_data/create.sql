@@ -1,36 +1,48 @@
-DROP TABLE IF EXISTS users CASCADE;
-CREATE TABLE users(
-  username VARCHAR(50) PRIMARY KEY,
-  password CHAR(60) NOT NULL
+/**/
+CREATE TABLE customer(
+  customer_id INT PRIMARY KEY,
+  first_name VARCHAR(50),
+  last_name VARCHAR(50),
+  username VARCHAR(50),
+  password VARCHAR(50),
+  funds_avail DECIMAL(3,2),
+  cart_id INT FOREIGN KEY
 );
 
-DROP TABLE IF EXISTS hats CASCADE;
-CREATE TABLE hats(
-  hat_type VARCHAR(50) PRIMARY KEY,
-  product_name VARCHAR(60) NOT NULL,
-  order_id INT,
-  price DECIMAL(3,2),
+CREATE TABLE cart(
+  cart_id INT PRIMARY KEY
+);
+
+CREATE TABLE cart_line(
+  line_id INT PRIMARY KEY,
+  cart_id INT FOREIGN KEY,
+  item_id INT FOREIGN KEY,
   quantity INT
 );
 
-DROP TABLE IF EXISTS customers CASCADE;
-CREATE TABLE customers(
-  customer_id INT PRIMARY KEY,
-  username CHAR(60) NOT NULL,
-  order_id INT,
-  address VARCHAR(50),
-  city VARCHAR(15)  NULL,
-  region VARCHAR(15)  NULL
+CREATE TABLE order(
+  order_id INT PRIMARY KEY,
+  order_number INT,
+  order_date DATETIME,
+  shipping_address VARCHAR(100),
+  shipping_city VARCHAR(50),
+  shipping_state VARCHAR(50),
+  shipping_country VARCHAR(50),
+  shipping_zip INT,
+  cart_id INT FOREIGN KEY
 );
 
-DROP TABLE IF EXISTS shipping_info CASCADE;
-CREATE TABLE shipping_info(
-  shipping_id INT PRIMARY KEY,
-  customer_id INT FOREIGN KEY,
-  location VARCHAR(50) NOT NULL,
-  city VARCHAR(15)  NULL,
-  region VARCHAR(15)  NULL,
-  order_id INT,
-  order_date datetime,
-  ship_date datetime
+CREATE TABLE order_line(
+  line_id INT PRIMARY KEY,
+  order_id INT FOREIGN KEY,
+  item_id INT FOREIGN KEY,
+  quantity INT
+);
+
+CREATE TABLE item(
+  item_id INT PRIMARY KEY,
+  item_name VARCHAR(50),
+  item_description VARCHAR(100),
+  item_price DECIMAL(3,2),
+  image FILE
 );
