@@ -15,8 +15,8 @@ CREATE TABLE cart(
   cart_id INT PRIMARY KEY
 );
 
-CREATE TABLE cart_line(
-  line_id INT,
+CREATE TABLE cart_line( 
+  line_id INT PRIMARY KEY,
   cart_id INT,
   item_id INT,
   quantity INT
@@ -35,7 +35,7 @@ CREATE TABLE order(
 );
 
 CREATE TABLE order_line(
-  line_id INT,
+  line_id INT PRIMARY KEY,
   order_id INT,
   item_id INT,
   quantity INT
