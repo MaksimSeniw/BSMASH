@@ -7,7 +7,7 @@ CREATE TABLE customer(
   password VARCHAR(50),
   funds_avail DECIMAL(3,2),
   items_in_cart INT,
-  
+  favorite_type VARCHAR(50),
   cart_id INT FOREIGN KEY
 );
 
