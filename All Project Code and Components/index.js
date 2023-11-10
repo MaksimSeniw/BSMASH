@@ -78,7 +78,7 @@ app.post('/register', async (req, res) => {
   
     // To-DO: Insert username and hashed password into the 'users' table
 
-    const query = `insert into users (username, password) values ($1,$2)  returning *;`;
+    const query = `insert into customers (username, password) values ($1,$2)  returning *;`;
     db.any(query, [
         req.body.username,
         hash
