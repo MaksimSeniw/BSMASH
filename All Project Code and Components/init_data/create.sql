@@ -8,7 +8,7 @@ CREATE TABLE customer(
   funds_avail DECIMAL(3,2),
   items_in_cart INT,
   favorite_type VARCHAR(50),
-  cart_id INT FOREIGN KEY
+  cart_id INT
 );
 
 CREATE TABLE cart(
@@ -16,9 +16,9 @@ CREATE TABLE cart(
 );
 
 CREATE TABLE cart_line(
-  line_id INT PRIMARY KEY,
-  cart_id INT FOREIGN KEY,
-  item_id INT FOREIGN KEY,
+  line_id INT,
+  cart_id INT,
+  item_id INT,
   quantity INT
 );
 
@@ -31,13 +31,13 @@ CREATE TABLE order(
   shipping_state VARCHAR(50),
   shipping_country VARCHAR(50),
   shipping_zip INT,
-  cart_id INT FOREIGN KEY
+  cart_id INT
 );
 
 CREATE TABLE order_line(
-  line_id INT PRIMARY KEY,
-  order_id INT FOREIGN KEY,
-  item_id INT FOREIGN KEY,
+  line_id INT,
+  order_id INT,
+  item_id INT,
   quantity INT
 );
 
