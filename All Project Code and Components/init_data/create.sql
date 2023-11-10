@@ -6,6 +6,8 @@ CREATE TABLE customer(
   username VARCHAR(50),
   password VARCHAR(50),
   funds_avail DECIMAL(3,2),
+  items_in_cart INT,
+  
   cart_id INT FOREIGN KEY
 );
 
@@ -42,6 +44,7 @@ CREATE TABLE order_line(
 CREATE TABLE item(
   item_id INT PRIMARY KEY,
   item_name VARCHAR(50),
+  item_type VARCHAR(50),
   item_description VARCHAR(100),
   item_price DECIMAL(3,2),
   image FILE
