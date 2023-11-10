@@ -106,7 +106,7 @@ app.post('/register', async (req, res) => {
 // post login
       app.post('/login', (req, res) => {
 
-        const query = `select password from users where username =  $1;`;    
+        const query = `select password from customers where username =  $1;`;    
        
         db.one(query, [
             req.body.username
