@@ -1,0 +1,14 @@
+11/13:
+
+What have we done:
+-We have created the database, and inserted some hats. 
+-We have finished our login and registration pages. 
+-We have started work on testing
+
+What we are planning for this next week:
+-We want to get our hat shopping page finished
+-We want to get our unit tests finished
+-We want to finish our UAT document
+
+What challenges we are facing:
+-Our unit testing is still not working correctly
