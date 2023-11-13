@@ -57,6 +57,16 @@ app.use(
   })
 );
 
+const user = {
+  customer_id: undefined,
+  first_name: undefined,
+  last_name: undefined,
+  username: undefined,
+  funds_avail: undefined,
+  favorite_type: undefined,
+  cart_id: undefined
+}
+
 // *****************************************************
 // <!-- Section 4 : API Routes -->
 // *****************************************************
@@ -104,44 +114,43 @@ app.post('/register', async (req, res) => {
       });
 
 // post login
-      app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
+  const username = req.body.username;
+  const query = `SELECT * FROM customers WHERE username = '${username}'`;
+  await db.one(query, username)
+    .then((data) => {
+      user.customer_id = data.customer_id;
+      user.first_name = data.first_name;
+      user.last_name = data.last_name;
+      user.username = data.username;
+      user.password = data.password;
+      user.funds_avail = data.funds_avail;
+      user.favorite_type = data.favorite_type;
+      user.cart_id = data.cart_id;
+    })
+    .catch((err) => {
+      console.log('Error accessing the DB');
+      console.log(err);
+      res.redirect('/login');
+    });
 
-        const query = `select password from customers where username =  $1;`;    
-       
-        db.one(query, [
-            req.body.username
-        ])
-        .then(async function(user) {
+  const match = await bcrypt.compare(sentPassword, user.password);
+  if (match) {
+    req.session.user = user;
+    req.session.save();
+  }
+  else {
+    console.log("Error: Incorrect Username or Password")
+  }
 
-                const match = await bcrypt.compare(req.body.password, user.password);
-                //save user details in session like in lab 8
-                
-                if(match == true)
-                {
-                    req.session.user = user;
-                    req.session.save();
+  if (user.username != "") {
+    res.redirect('/discover');
+  }
+  else {
+    res.redirect('/register');
+  }
 
-                    console.log(user);
-                    res.redirect('/discover');
-                }
-                // else
-                // {
-                //     res.render('pages/login',{
-                //     error: true,
-                //     message: "Incorrect Password"
-                //     });
-                // }
-            })
-            // if query execution fails
-            // send error message
-            .catch(function (err) {
-              res.render('pages/login',{
-                error: true,
-                message: "Incorrect Username or Password"
-                });
-                return console.log(err);
-            });
-        });
+});
 
 // Authentication Middleware.
 const auth = (req, res, next) => {
@@ -155,6 +164,19 @@ const auth = (req, res, next) => {
   // Authentication Required
   app.use(auth);
   
+//get profile
+app.get("/profile", (req, res) => {
+  res.render("pages/profile", {
+    customer_id: req.session.user.customer_id,
+    first_name: req.session.user.first_name,
+    last_name: req.session.user.last_name,
+    username: req.session.user.username,
+    funds_avail: req.session.user.funds_avail,
+    favorite_type: req.session.user.favorite_type,
+    cart_id: req.session.user.cart_id,
+  });
+});
+
 // get home
 app.get('/home', (req, res) => {
   res.render("pages/home",{
@@ -192,6 +214,47 @@ app.get('/discover', (req, res) => {
   res.render('pages/discover', { results });
 });
 
+//get items page
+app.get("/items", (req, res) => {
+  const query = `SELECT * FROM items`;
+  // Query to list all the courses taken by a student
+
+  db.one(query)
+    .then((items) => {
+      res.render("pages/items", {
+        items
+      });
+    })
+    .catch((err) => {
+      res.render("pages/items", {
+        items: [],
+        error: true,
+        message: err.message,
+      });
+    });
+});
+
+//add to cart
+app.post("/cart/add", (req, res) => {
+  const item_id = parseInt(req.body.item_id);
+  const cart_id = parseInt(req.session.user.cart_id);
+  const quantity = parseInt(req.body.quantity);
+  const query = `INSERT INTO cart_lines (line_id, cart_id, item_id, quantity) VALUES (DEFAULT, ${cart_id}, ${item_id}, ${quantity});`;
+
+  db.one(query)
+  .then((data) => {
+    res.redirect("/items", {
+      message: `Successfully added items to cart`,
+    });
+  })
+  .catch((err) => {
+    res.redirect("/items", {
+      error: true,
+      message: err.message,
+    });
+  });
+});
+
 app.get('/welcometest', (req, res) => {
   res.json({status: 'success', message: 'Welcome!'});
 });
@@ -200,5 +263,6 @@ app.get('/welcometest', (req, res) => {
 // <!-- Section 5 : Start Server-->
 // *****************************************************
 // starting the server and keeping the connection open to listen for more requests
-module.exports = app.listen(3000);
+/*module.exports = */
+app.listen(3000);
 console.log('Server is listening on port 3000');

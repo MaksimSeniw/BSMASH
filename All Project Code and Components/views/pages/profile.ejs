@@ -5,9 +5,25 @@
     <div class="col"><%- include ('../partials/message') %></div>
   <div class="container">
     <!-- THE REST OF YOUR HTML CODE GOES HERE -->
-    <form action="/home" method="POST">
-
-    </form>
+    <h1><centre>Welcome User : <%= username %></centre></h1>
+    <table>
+        <tr>
+          <th>First Name</th>
+          <td><%= first_name %></td>
+        </tr>
+        <tr>
+          <th>Last Name</th>
+          <td><%= last_name %></td>
+        </tr>
+        <tr>
+          <th>Funds Available</th>
+          <td><%= funds_avail %></td>
+        </tr>
+        <tr>
+          <th>Favorite Type</th>
+          <td><%= favorite_type %></td>
+        </tr>
+      </table>
 </div>
 </main>
 

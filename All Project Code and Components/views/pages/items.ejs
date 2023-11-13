@@ -1,0 +1,47 @@
+<%- include ('../partials/header') %> 
+<%- include ('../partials/menu') %>
+
+        <main>
+            <div class="container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Hat Name</th>
+                            <th>Hat Type</th>
+                            <th>Description</th>
+                            <th>Price (in $USD)</th>
+                            <th>Image</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% items.forEach(function(item){ %>
+                            <tr>
+                                <th scope="row">
+                                    <%= item.item_name%>
+                                </th>
+                                <td>
+                                    <%=item.item_type%>
+                                </td>
+                                <td>
+                                    <%=item.item_description%>
+                                </td>
+                                <td>
+                                    <%=item.item_price>
+                                </td>
+                                <td>
+                                    <img src = "<%- item.item_image_link>" alt = "<%- item.item_name%>">
+                                </td>
+                                <form action = "/cart/add" method = "POST">
+                                <input hidden name = "item_id" value = "<%- item.item_id%>">
+                                <td>
+                                    <input type = "number" id = "quantity" name = "quantity" min = "1" max = "50" value = "1"/>
+                                    <button type = "submit" class = "btn-primary">Add to Cart</button></td>    
+                                </form>
+                            </tr>
+                            <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+
+        <%- include ('../partials/footer') %>
