@@ -5,10 +5,19 @@ What have we done:
 -We have finished our login and registration pages. 
 -We have started work on testing
 
+
 What we are planning for this next week:
 -We want to get our hat shopping page finished
+-get cart page finished
 -We want to get our unit tests finished
 -We want to finish our UAT document
+-Adding items, cart, etc. to header files
 
 What challenges we are facing:
 -Our unit testing is still not working correctly
+
+Unit Testing:
+- Login Success redirects to hats page (positive)
+- login failure redirects to register (negative)
+- register success redirects to profile (positive)
+- register fail sends error message (negative)
