@@ -65,13 +65,17 @@ const user = {
   funds_avail: undefined,
   favorite_type: undefined,
   cart_id: undefined
-}
+};
 
 // *****************************************************
 // <!-- Section 4 : API Routes -->
 // *****************************************************
 
 // TODO - Include your API routes here
+
+app.get('/', (req,res) => {
+  res.redirect('/login');
+});
 
 // get register
 app.get('/register', (req, res) => {
@@ -85,24 +89,29 @@ app.get('/register', (req, res) => {
 app.post('/register', async (req, res) => {
     //hash the password using bcrypt library
     const hash = await bcrypt.hash(req.body.password, 10);
-  
+    const newCartQuery = `INSERT INTO carts (cart_id) VALUES (DEFAULT) RETURNING *;`;
+    const newCartResult = await db.one(newCartQuery);
+    const newCartId = newCartResult.cart_id;
+
     // To-DO: Insert username and hashed password into the 'users' table
+    const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, cart_id) VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', ${newCartId})  RETURNING *;`;
+    if(req.body.username != ""){
+      db.one(query)
+      .then((data) => {
+              res.redirect('/login');
+              })
+          // if query execution fails
+          // send error message
 
-    const query = `insert into customers (username, password) values ($1,$2)  returning *;`;
-    db.any(query, [
-        req.body.username,
-        hash
-    ])
-    .then(function (data) {
-            res.redirect('/login');
-            })
-        // if query execution fails
-        // send error message
-
-        .catch(function (err) {
-            res.redirect(`/register?error=true&message=${encodeURIComponent("Failed to insert user into database")}`)
-            return console.log(err);
-        });
+          .catch((err) => {
+              res.redirect(`/register?error=true&message=${encodeURIComponent("Failed to insert user into database")}`);
+              return console.log(err);
+          });
+      }
+      else{
+        res.redirect(`/register?error=true&message=${encodeURIComponent("Failed to insert user into database")}`);
+        console.log('error');
+      }
     });
 
 // get login
@@ -140,11 +149,11 @@ app.post('/login', async (req, res) => {
     req.session.save();
   }
   else {
-    console.log("Error: Incorrect Username or Password")
+    console.log("Error: Incorrect Username or Password");
   }
 
   if (user.username != "") {
-    res.redirect('/discover');
+    res.redirect('/items');
   }
   else {
     res.redirect('/register');
@@ -177,14 +186,6 @@ app.get("/profile", (req, res) => {
   });
 });
 
-// get home
-app.get('/home', (req, res) => {
-  res.render("pages/home",{
-      error: req.query.error,
-      message: req.query.message,
-  })
-});
-
 // logout
     app.get("/logout", (req, res) => {
         req.session.destroy();
@@ -192,44 +193,27 @@ app.get('/home', (req, res) => {
             message: "Logged out Successfully"
         }); 
       });
-      
-//discover
-app.get('/discover', (req, res) => {
- 
-  const results = [
-    {
-      name: "Event 1",
-      date: "2023-11-15",
-      description: "This is the first event description.",
-    },
-    {
-      name: "Event 2",
-      date: "2023-12-05",
-      description: "This is the second event description.",
-    },
-    // the above is just an example; you could add more
-  ]; 
-
- 
-  res.render('pages/discover', { results });
-});
 
 //get items page
 app.get("/items", (req, res) => {
-  const query = `SELECT * FROM items`;
-  // Query to list all the courses taken by a student
+  const query = 'SELECT * FROM items;';
 
-  db.one(query)
-    .then((items) => {
+  db.any(query)
+    .then((data) => {
+      console.log("success");
       res.render("pages/items", {
-        items
+        items: data,
+        error: req.query.error,
+        message: req.query.message,
       });
     })
     .catch((err) => {
+      console.log(err);
+      console.log("failure");
       res.render("pages/items", {
         items: [],
-        error: true,
-        message: err.message,
+        error: req.query.error,
+        message: req.query.message,
       });
     });
 });
@@ -243,18 +227,46 @@ app.post("/cart/add", (req, res) => {
 
   db.one(query)
   .then((data) => {
-    res.redirect("/items", {
-      message: `Successfully added items to cart`,
-    });
+    res.redirect(`/cart?error=false&message=${encodeURIComponent("Successfully deleted from cart")}`);
   })
   .catch((err) => {
-    res.redirect("/items", {
-      error: true,
-      message: err.message,
-    });
+    res.redirect(`/cart?error=false&message=${encodeURIComponent("Successfully deleted from cart")}`);
   });
 });
 
+app.post("/cart/delete", (req, res) => {
+  const item_id = parseInt(req.body.item_id);
+  const cart_id = parseInt(req.session.user.cart_id);
+  const query = `DELETE FROM cart_lines WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
+
+  db.one(query)
+  .then((data) => {
+    res.redirect(`/cart?error=false&message=${encodeURIComponent("Successfully deleted from cart")}`);
+  })
+  .catch((err) => {
+    res.redirect(`/cart?error=true&message=${encodeURIComponent("Failed to delete from cart")}`);
+  });
+});
+
+app.get("/cart", (req, res) => {
+  const query =  `SELECT * FROM items INNER JOIN cart_lines ON items.item_id = cart_lines.item_id WHERE cart_id = ${req.session.user.cart_id}`;
+
+  db.any(query)
+    .then((data) => {
+      res.render("pages/cart", {
+        cart_lines: data,
+        error: req.query.error,
+        message: req.query.message,
+      });
+  })
+  .catch((err) => {
+    res.render("pages/cart", {
+      cart_lines: [],
+      error: req.query.error,
+      message: req.query.message,
+    });
+  });
+});
 app.get('/welcometest', (req, res) => {
   res.json({status: 'success', message: 'Welcome!'});
 });
@@ -263,5 +275,6 @@ app.get('/welcometest', (req, res) => {
 // <!-- Section 5 : Start Server-->
 // *****************************************************
 // starting the server and keeping the connection open to listen for more requests
+//module.exports = 
 app.listen(3000);
 console.log('Server is listening on port 3000');
