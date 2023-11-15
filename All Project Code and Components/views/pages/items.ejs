@@ -1,4 +1,4 @@
-<%- include ('../partials/header') %> 
+<%- include ('../partials/head') %> 
 <%- include ('../partials/menu') %>
 
         <main>
@@ -29,7 +29,7 @@
                                     <%=item.item_price%>
                                 </td>
                                 <td>
-                                    <img src = "<%- item.item_image_link>" alt = "<%- item.item_name%>">
+                                    <img src = "<%=item.item_image_link%>" alt = "<%= item.item_name%>" width = "200" height = "200">
                                 </td>
                                 <form action = "/cart/add" method = "POST">
                                 <input hidden name = "item_id" value = "<%- item.item_id%>">
