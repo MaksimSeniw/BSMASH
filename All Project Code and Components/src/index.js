@@ -9,6 +9,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 var bcrypt = require('bcrypt'); //  To hash passwords
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part B.
+const path = require('path');
 
 // *****************************************************
 // <!-- Section 2 : Connect to DB -->
@@ -75,6 +76,15 @@ const user = {
 
 app.get('/', (req,res) => {
   res.redirect('/login');
+});
+
+//get an image from directory
+app.get('/images/:imageName', (req, res) => {
+  const imageName = req.params.imageName;
+  const imagePath = path.join(__dirname, './resources/img', imageName);
+
+  // Send the image file as a response
+  res.sendFile(imagePath);
 });
 
 // get register

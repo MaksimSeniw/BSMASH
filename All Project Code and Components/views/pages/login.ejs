@@ -1,26 +1,103 @@
 <%- include ('../partials/head') %>
 <%- include ('../partials/menu') %>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+<style>
+  * {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "segoe ui", roboto, oxygen, ubuntu, cantarell, "fira sans", "droid sans", "helvetica neue", Arial, sans-serif;
+    font-size: 16px;
+}
+body{
+  background: #d9a7c7;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #fffcdc, #d9a7c7);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #fffcdc, #d9a7c7); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
+
+}
+.login {
+    width: 400px;
+    background-color: #ffffff;
+    box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3);
+    margin: 100px auto;
+}
+.login h1 {
+    text-align: center;
+    color: #5b6574;
+    font-size: 24px;
+    padding: 20px 0 20px 0;
+    border-bottom: 1px solid #dee0e4;
+}
+.login form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 20px;
+}
+.login form label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: #3274d6;
+    color: #ffffff;
+}
+.login form input[type="password"], .login form input[type="text"] {
+    width: 310px;
+    height: 50px;
+    border: 1px solid #dee0e4;
+    margin-bottom: 20px;
+    padding: 0 15px;
+}
+.login form input[type="submit"] {
+    width: 100%;
+    padding: 15px;
+   margin-top: 20px;
+    background-color: #3274d6;
+    border: 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: #ffffff;
+    transition: background-color 0.2s;
+}
+.login form input[type="submit"]:hover {
+  background-color: #2868c7;
+    transition: background-color 0.2s;
+}
+  </style>
 <main>
-    <div class="col"><%- include ('../partials/message') %></div>
-  <div class="container">
-    <!-- THE REST OF YOUR HTML CODE GOES HERE -->
+<div class="col"><%- include ('../partials/message') %></div>
+  <div class="login">
     <h1>Login</h1>
-      <form action="/login" method="POST">
-        <div class="mb-3">
-          <label for="username" class="form-label">Username</label>
-          <input type="username" class="form-control" name="username" aria-describedby="emailHelp">
-        </div>
-        <div class="mb-3">
-          <label for="password" class="form-label">Password</label>
-          <input type="password" class="form-control" name="password">
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-      </form>
-      <form action="/register">
-        <button type="submit" class="btn btn-primary">Register</button>
-      </form>
+    <form action="/login" method="post">
+      <label for="username" class="form-label"><i class="fas fa-user"></i></label>
+      <input type="text" name="username" placeholder="Username" id="username" required> 
+      <label for="password">
+        <i class="fas fa-lock"></i>
+      </label>
+      <input type="password" name="password" placeholder="Password" id="password" required>
+      <input type="submit" value="Login">
+      <p style="font-family: segoe ui">Don't have an account? <a href="/register">Register</a></p> 
+    </form>
   </div>
 </main>
 
 <%- include ('../partials/footer') %>
+
+
+<!-- <div class="col"><%- include ('../partials/message') %></div>
+  <div class="container">
+    <h1>Login</h1>
+      <form action="/login" method="POST">
+        <div class="mb-3">
+          <label for="username" class="form-label"><i class="fas fa-user"></i> Username </label>
+          <input type="username" class="form-control" name="username" aria-describedby="emailHelp" placeholder="Username">
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label"><i class="fas fa-lock"></i> Password</label>
+          <input type="password" class="form-control" name="password" placeholder="Password">
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+      </form>
+      <p>Don't have an account? <a href="/register">Register</a></p> 
+  </div> -->
