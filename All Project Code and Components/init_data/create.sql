@@ -23,8 +23,7 @@ CREATE TABLE cart_lines(
 
 CREATE TABLE orders(
   order_id SERIAL PRIMARY KEY,
-  order_number INT,
-  order_date DATE,
+  order_date VARCHAR(1000),
   shipping_address VARCHAR(1000),
   shipping_city VARCHAR(1000),
   shipping_state VARCHAR(1000),

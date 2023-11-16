@@ -74,7 +74,7 @@ const user = {
 
 // TODO - Include your API routes here
 
-app.get('/', (req,res) => {
+app.get('/', (req, res) => {
   res.redirect('/login');
 });
 
@@ -89,48 +89,48 @@ app.get('/images/:imageName', (req, res) => {
 
 // get register
 app.get('/register', (req, res) => {
-    res.render("pages/register",{
-        error: req.query.error,
-        message: req.query.message,
-    })
-  });
+  res.render("pages/register", {
+    error: req.query.error,
+    message: req.query.message,
+  })
+});
 
 // post register
 app.post('/register', async (req, res) => {
-    //hash the password using bcrypt library
-    const hash = await bcrypt.hash(req.body.password, 10);
-    const newCartQuery = `INSERT INTO carts (cart_id) VALUES (DEFAULT) RETURNING *;`;
-    const newCartResult = await db.one(newCartQuery);
-    const newCartId = newCartResult.cart_id;
+  //hash the password using bcrypt library
+  const hash = await bcrypt.hash(req.body.password, 10);
+  const newCartQuery = `INSERT INTO carts (cart_id) VALUES (DEFAULT) RETURNING *;`;
+  const newCartResult = await db.one(newCartQuery);
+  const newCartId = newCartResult.cart_id;
 
-    // To-DO: Insert username and hashed password into the 'users' table
-    const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, cart_id) VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', ${newCartId})  RETURNING *;`;
-    if(req.body.username != ""){
-      db.one(query)
+  // To-DO: Insert username and hashed password into the 'users' table
+  const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, cart_id) VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', ${newCartId})  RETURNING *;`;
+  if (req.body.username != "") {
+    db.one(query)
       .then((data) => {
-              res.redirect('/login');
-              })
-          // if query execution fails
-          // send error message
+        res.redirect('/login');
+      })
+      // if query execution fails
+      // send error message
 
-          .catch((err) => {
-              res.redirect(`/register?error=true&message=${encodeURIComponent("Failed to insert user into database")}`);
-              return console.log(err);
-          });
-      }
-      else{
+      .catch((err) => {
         res.redirect(`/register?error=true&message=${encodeURIComponent("Failed to insert user into database")}`);
-        console.log('error');
-      }
-    });
+        return console.log(err);
+      });
+  }
+  else {
+    res.redirect(`/register?error=true&message=${encodeURIComponent("Failed to insert user into database")}`);
+    console.log('error');
+  }
+});
 
 // get login
-    app.get('/login', (req, res) => {
-        res.render("pages/login",{
-            error: req.query.error,
-            message: req.query.message,
-        })
-      });
+app.get('/login', (req, res) => {
+  res.render("pages/login", {
+    error: req.query.error,
+    message: req.query.message,
+  })
+});
 
 // post login
 app.post('/login', async (req, res) => {
@@ -173,16 +173,16 @@ app.post('/login', async (req, res) => {
 
 // Authentication Middleware.
 const auth = (req, res, next) => {
-    if (!req.session.user) {
-      // Default to login page.
-      return res.redirect('/login');
-    }
-    next();
-  };
-  
-  // Authentication Required
-  app.use(auth);
-  
+  if (!req.session.user) {
+    // Default to login page.
+    return res.redirect('/login');
+  }
+  next();
+};
+
+// Authentication Required
+app.use(auth);
+
 //get profile
 app.get("/profile", (req, res) => {
   res.render("pages/profile", {
@@ -197,12 +197,12 @@ app.get("/profile", (req, res) => {
 });
 
 // logout
-    app.get("/logout", (req, res) => {
-        req.session.destroy();
-        res.render("pages/login",{
-            message: "Logged out Successfully"
-        }); 
-      });
+app.get("/logout", (req, res) => {
+  req.session.destroy();
+  res.render("pages/login", {
+    message: "Logged out Successfully"
+  });
+});
 
 //get items page
 app.get("/items", (req, res) => {
@@ -236,12 +236,12 @@ app.post("/cart/add", (req, res) => {
   const query = `INSERT INTO cart_lines (line_id, cart_id, item_id, quantity) VALUES (DEFAULT, ${cart_id}, ${item_id}, ${quantity});`;
 
   db.one(query)
-  .then((data) => {
-    res.redirect(`/cart?error=false&message=${encodeURIComponent("Successfully deleted from cart")}`);
-  })
-  .catch((err) => {
-    res.redirect(`/cart?error=false&message=${encodeURIComponent("Successfully deleted from cart")}`);
-  });
+    .then((data) => {
+      res.redirect(`/items?error=false&message=${encodeURIComponent("Successfully added to cart")}`);
+    })
+    .catch((err) => {
+      res.redirect(`/items?error=true&message=${encodeURIComponent("Failed to add to cart")}`);
+    });
 });
 
 app.post("/cart/delete", (req, res) => {
@@ -250,16 +250,16 @@ app.post("/cart/delete", (req, res) => {
   const query = `DELETE FROM cart_lines WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
 
   db.one(query)
-  .then((data) => {
-    res.redirect(`/cart?error=false&message=${encodeURIComponent("Successfully deleted from cart")}`);
-  })
-  .catch((err) => {
-    res.redirect(`/cart?error=true&message=${encodeURIComponent("Failed to delete from cart")}`);
-  });
+    .then((data) => {
+      res.redirect(`/cart?error=false&message=${encodeURIComponent("Successfully deleted from cart")}`);
+    })
+    .catch((err) => {
+      res.redirect(`/cart?error=true&message=${encodeURIComponent("Failed to delete from cart")}`);
+    });
 });
 
 app.get("/cart", (req, res) => {
-  const query =  `SELECT * FROM items INNER JOIN cart_lines ON items.item_id = cart_lines.item_id WHERE cart_id = ${req.session.user.cart_id}`;
+  const query = `SELECT * FROM items INNER JOIN cart_lines ON items.item_id = cart_lines.item_id WHERE cart_id = ${req.session.user.cart_id}`;
 
   db.any(query)
     .then((data) => {
@@ -268,17 +268,87 @@ app.get("/cart", (req, res) => {
         error: req.query.error,
         message: req.query.message,
       });
+    })
+    .catch((err) => {
+      res.render("pages/cart", {
+        cart_lines: [],
+        error: req.query.error,
+        message: req.query.message,
+      });
+    });
+});
+
+app.post("/orders/create", async (req, res) => {
+  const currentDate = new Date().toDateString();
+  const parsedZip = parseInt(req.body.shipping_zip);
+  const createOrderQuery = `INSERT INTO orders (order_id, order_date, shipping_address, shipping_city, shipping_state, shipping_country, shipping_zip, cart_id) VALUES (DEFAULT, '${currentDate}', '${req.body.shipping_address}', '${req.body.shipping_city}', '${req.body.shipping_state}', '${req.body.shipping_country}', ${parsedZip}, ${req.session.user.cart_id}) RETURNING *;`;
+
+  var newOrderId = 0;
+  await db.any(createOrderQuery)
+  .then((data) => {
+    console.log(data.order_id);
+    //res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully created order")}`);
   })
   .catch((err) => {
-    res.render("pages/cart", {
-      cart_lines: [],
-      error: req.query.error,
-      message: req.query.message,
-    });
+    res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
+  });
+
+  const itemsQuery = `INSERT INTO order_lines (order_id, item_id, quantity) SELECT ${newOrderId}, item_id, quantity FROM cart_lines WHERE cart_id = 1;`;
+  await db.any(itemsQuery)
+  .then((data) => {
+    console.log("added order lines");
+  })
+  .catch((err) => {
+    res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
+  });
+
+  const deleteQuery = `DELETE FROM cart_lines WHERE cart_id = ${req.session.user.cart_id};`;
+  await db.any(deleteQuery)
+  .then((data) => {
+    res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully created order")}`);
+  })
+  .catch((err) => {
+    res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
   });
 });
+
+app.post("/orders/delete", async (req, res) =>{
+  const linesQuery = `DELETE FROM order_lines WHERE order_id = ${req.body.order_id};`;
+  const orderQuery = `DELETE FROM orders WHERE order_id = ${req.body.order_id};`;
+
+  await db.any(linesQuery);
+
+  db.any(orderQuery)
+    .then((data) => {
+      res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully removed order")}`);
+    })
+    .catch((err) => {
+      res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to remove order")}`);
+    });
+});
+
+app.get("/orders", (req, res) => {
+  const query = `SELECT * FROM orders WHERE cart_id = ${req.session.user.cart_id};`;
+
+  db.any(query)
+    .then((data) => {
+      res.render("pages/orders", {
+        orders: data,
+        error: req.query.error,
+        message: req.query.message,
+      });
+    })
+    .catch((err) => {
+      res.render("pages/orders", {
+        orders: [],
+        error: req.query.error,
+        message: req.query.message,
+      });
+    });
+});
+
 app.get('/welcometest', (req, res) => {
-  res.json({status: 'success', message: 'Welcome!'});
+  res.json({ status: 'success', message: 'Welcome!' });
 });
 
 // *****************************************************
