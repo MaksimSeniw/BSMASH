@@ -1,10 +1,123 @@
 <%- include ('../partials/head') %>
 <%- include ('../partials/menu') %>
+  <script src="https://kit.fontawesome.com/5131b9749c.js" crossorigin="anonymous"></script>
 
+<style>
+  * {
+    margin: 0;
+    padding: 0
+}
+
+body {
+  background: #1a2a6c;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #fdbb2d, #b21f1f, #1a2a6c);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #fdbb2d, #b21f1f, #1a2a6c); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+}
+
+.card {
+    width: 350px;
+    background-color: #efefef;
+    border: none;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
+.image img {
+    transition: all 0.5s
+}
+
+.card:hover .image img {
+    transform: scale(1.5)
+}
+
+.btn {
+    height: 140px;
+    width: 140px;
+    border-radius: 50%
+}
+
+.name {
+    font-size: 22px;
+    font-weight: bold
+}
+
+.idd {
+    font-size: 14px;
+    font-weight: 600
+}
+
+.idd1 {
+    font-size: 12px
+}
+
+.number {
+    font-size: 22px;
+    font-weight: bold
+}
+
+.follow {
+    font-size: 12px;
+    font-weight: 500;
+    color: #444444
+}
+
+.btn1 {
+    height: 40px;
+    width: 150px;
+    border: none;
+    background-color: #000;
+    color: #aeaeae;
+    font-size: 15px
+}
+
+.text span {
+    font-size: 13px;
+    color: #545454;
+    font-weight: 500
+}
+
+.icons i {
+    font-size: 19px
+}
+
+hr .new1 {
+    border: 1px solid
+}
+
+.join {
+    font-size: 14px;
+    color: #a0a0a0;
+    font-weight: bold
+}
+
+.date {
+    background-color: #ccc
+}
+
+
+</style>
 <main>
-    <div class="col"><%- include ('../partials/message') %></div>
-  <div class="container">
-    <!-- THE REST OF YOUR HTML CODE GOES HERE -->
+  <div class="col"><%- include ('../partials/message') %></div>
+  <div class="container mt-4 mb-4 p-3 d-flex justify-content-center"> 
+    <div class="card p-4"> 
+      <div class=" image d-flex flex-column justify-content-center align-items-center"> 
+        <button class="btn btn-secondary"> 
+          <i class="fa fa-fw fa-user"></i></button>
+          <span class="name mt-3"><%= first_name %> <%= last_name %></span> 
+          <span class="idd">@<%= username %></span> 
+          <div class="d-flex flex-row justify-content-center align-items-center gap-2"></div>
+            <div class="d-flex flex-row justify-content-center align-items-center mt-3"> 
+              <span class="number"><%= funds_avail %> <span class="follow">Funds</span> </div> 
+              <div class="text mt-3"> <span>Favorite Hat: <%= favorite_type %></span> 
+            </div>        
+              <div class=" d-flex mt-2"><a href="/edit_profile"><button class="btn1 btn-dark">Edit Profile</button></a> </div> 
+
+
+</div>
+  
+  
+  <!-- <div class="container">
     <h1><centre>Welcome User : <%= username %></centre></h1>
     <table>
         <tr>
@@ -24,7 +137,7 @@
           <td><%= favorite_type %></td>
         </tr>
       </table>
-</div>
+  </div> -->
 </main>
 
 <%- include ('../partials/footer') %>

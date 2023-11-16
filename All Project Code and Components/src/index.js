@@ -346,6 +346,44 @@ app.get("/orders", (req, res) => {
     });
 });
 
+
+
+//edit profile
+app.get('/edit_profile', (req, res) => {
+  res.render("pages/edit_profile", {
+    error: req.query.error,
+    message: req.query.message,
+  })
+});
+//posting edited profile
+app.post('/edit_profile', async (req, res) => {
+  // const hash = await bcrypt.hash(req.body.password, 10);
+  // const newCartQuery = `INSERT INTO carts (cart_id) VALUES (DEFAULT) RETURNING *;`;
+  // const newCartResult = await db.one(newCartQuery);
+  // const newCartId = newCartResult.cart_id;
+
+  // const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, cart_id) 
+  // VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', ${newCartId})  RETURNING *;`;
+  const query = `UPDATE customers 
+  SET first_name = '${req.body.first_name}', last_name = '${req.body.last_name}', username = '${req.body.username}', favorite_type = '${req.body.favorite_type}', password = '${hash}'
+  WHERE customer_id = 'DEFAULT'`;
+  res.redirect('/items');
+  if (req.body.username != "") {
+    db.one(query)
+      .then((data) => {
+        res.redirect('/login');
+      })
+      .catch((err) => {
+        res.redirect(`/register?error=true&message=${encodeURIComponent("Failed to insert user into database")}`);
+        return console.log(err);
+      });
+  }
+  else {
+    res.redirect(`/register?error=true&message=${encodeURIComponent("Failed to insert user into database")}`);
+    console.log('error');
+  }
+});
+
 // *****************************************************
 // <!-- Section 5 : Start Server-->
 // *****************************************************
