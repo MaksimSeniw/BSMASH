@@ -20,7 +20,7 @@
                                     <%=order.order_date%>
                                 </td>
                                 <form action = "/orders/delete" method = "POST">
-                                <input hidden name = "item_id" value = "<%- order.order_id%>">
+                                <input hidden name = "order_id" value = "<%=order.order_id%>">
                                 <td>
                                     <button type = "submit" class = "btn-primary">Delete Order</button></td>    
                                 </form>

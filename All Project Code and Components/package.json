@@ -1,6 +1,6 @@
 {
     "name": "project-3308",
-    "main": "index.js",
+    "main": "./src/index.js",
     "dependencies": {
       "ejs": "^3.1.8",
       "ejs-lint": "^0.3.0",
