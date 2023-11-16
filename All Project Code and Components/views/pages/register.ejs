@@ -1,10 +1,89 @@
 <%- include ('../partials/head') %>
 <%- include ('../partials/menu') %>
+<style>
+    * {
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "segoe ui", roboto, oxygen, ubuntu, cantarell, "fira sans", "droid sans", "helvetica neue", Arial, sans-serif;
+    font-size: 16px;
+}
+body{
+  background: #FEAC5E;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #4BC0C8, #C779D0, #FEAC5E);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #4BC0C8, #C779D0, #FEAC5E); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 
+
+}
+.register {
+    width: 400px;
+    background-color: #ffffff;
+    box-shadow: 0 0 9px 0 rgba(0, 0, 0, 0.3);
+    margin: 100px auto;
+}
+.register h1 {
+    text-align: center;
+    color: #5b6574;
+    font-size: 24px;
+    padding: 20px 0 20px 0;
+    border-bottom: 1px solid #dee0e4;
+}
+.register form {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-top: 20px;
+}
+.register form label {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 50px;
+    height: 50px;
+    background-color: #3274d6;
+    color: #ffffff;
+}
+.register form input[type="password"], .register form input[type="text"] {
+    width: 310px;
+    height: 50px;
+    border: 1px solid #dee0e4;
+    margin-bottom: 20px;
+    padding: 0 15px;
+}
+.register form input[type="submit"] {
+    width: 100%;
+    padding: 15px;
+   margin-top: 20px;
+    background-color: #3274d6;
+    border: 0;
+    cursor: pointer;
+    font-weight: bold;
+    color: #ffffff;
+    transition: background-color 0.2s;
+}
+.register form input[type="submit"]:hover {
+  background-color: #2868c7;
+    transition: background-color 0.2s;
+}
+</style>
 <main>
     <div class="col"><%- include ('../partials/message') %></div>
-  <div class="container">
-    <!-- THE REST OF YOUR HTML CODE GOES HERE -->
+    <div class="register">
+      <h1>Register</h1>
+      <form action="/register" method="POST">
+        <label for="first_name" class="form-label"><i class="fa-solid fa-signature"></i></label>
+        <input type="text" name="first_name" placeholder="First Name" id="first_name" required> 
+        <label for="last_name"><i class="fa-solid fa-signature"></i></label>
+        <input type="text" name="last_name" placeholder="Last Name" id="last_name" required>
+        <label for="favorite_type"><i class="fa-solid fa-hat-wizard"></i></label>
+        <input type="text" name="favorite_type" placeholder="Favorite Type of Hat" id="favorite_type" required>
+        <label for="username"><i class="fa-solid fa-user"></i></i></label>
+        <input type="text" name="username" placeholder="Desired Username" id="username" required>
+        <label for="password"><i class="fas fa-lock"></i></label>
+        <input type="password" name="password" placeholder="Desired Password" id="password" required>
+        <input type="submit" class="btn btn-primary" value="Register">
+      </form>
+    </div>
+  
+    <!-- <div class="container">
     <h1>Register</h1>
       <form action="/register" method="POST">
         <div class="mb-3">
@@ -29,7 +108,7 @@
         </div>
         <button type="submit" class="btn btn-primary">Register</button>
       </form>
-  </div>
+  </div> -->
 </main>
 
 <%- include ('../partials/footer') %>
