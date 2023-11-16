@@ -30,9 +30,10 @@ describe('Server!', () => {
       .request(server)
       .post('/register')
       .send({ first_name: 'John', last_name: 'Doe', username: 'test', password: 'test', favorite_type: 'fedora' })
+      .redirects(0)
       .end((err, res) => {
-        expect(res).to.have.status(200);
-        expect(res).to.redirectTo('/login');
+        expect(res).to.have.status(302);
+        res.should.redirectTo('/login');
         done();
       });
   });
@@ -44,9 +45,10 @@ describe('Server!', () => {
       .request(server)
       .post('/register')
       .send({ first_name: 'John', last_name: 'Doe', username: "", password: 'test', favorite_type: 'fedora' })
+      .redirects(0)
       .end((err, res) => {
-        expect(res).to.have.status(200);
-        expect(res).to.redirectTo(`/register?error=true&message=${encodeURIComponent("Failed to insert user into database")}`);
+        expect(res).to.have.status(302);
+        res.should.redirectTo(`/register?error=true&message=${encodeURIComponent("Failed to insert user into database")}`);
         done();
       });
   });
@@ -59,9 +61,10 @@ describe('Server!', () => {
       .request(server)
       .post('/login')
       .send({ username: 'test', password: 'test' })
+      .redirects(0)
       .end((err, res) => {
-        expect(res).to.have.status(200);
-        expect(res).to.redirectTo('/items');
+        expect(res).to.have.status(302);
+        res.should.redirectTo('/items');
         done();
       });
   });
@@ -73,9 +76,10 @@ describe('Server!', () => {
       .request(server)
       .post('/login')
       .send({ username: 'test', password: 'incorrect' })
+      .redirects(0)
       .end((err, res) => {
-        expect(res).to.have.status(200);
-        expect(res).to.redirectTo('/login')
+        expect(res).to.have.status(302);
+        res.should.redirectTo('/login')
         done();
       });
   });

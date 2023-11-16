@@ -45,6 +45,21 @@
                     </tbody>
                 </table>
             </div>
+            <div class = "container text-center">
+                <form action = "/orders/create" method = "POST">
+                    <label for="shipping_address" class="form-label">Shipping Address</label>
+                    <input type = "text" id = "shipping_address" name = "shipping_address" value = "Ex: 123 Main St."/>
+                    <label for="shipping_city" class="form-label">Shipping City</label>
+                    <input type = "text" id = "shipping_city" name = "shipping_city" value = "Ex: New York City"/>
+                    <label for="shipping_state" class="form-label">Shipping State</label>
+                    <input type = "text" id = "shipping_state" name = "shipping_state" value = "Ex: New York"/>
+                    <label for="shipping_country" class="form-label">Shipping Country</label>
+                    <input type = "text" id = "shipping_country" name = "shipping_country" value = "Ex: USA"/>
+                    <label for="shipping_zip" class="form-label">Shipping Zip</label>
+                    <input type = "text" id = "shipping_zip" name = "shipping_zip" value = "Ex: 12345"/>
+                    <button type = "submit" class = "btn-primary">Place Order</button>
+                </form>
+            </div>
         </main>
 
         <%- include ('../partials/footer') %>
