@@ -74,6 +74,10 @@ const user = {
 
 // TODO - Include your API routes here
 
+app.get('/welcometest', (req, res) => {
+  res.json({ status: 'success', message: 'Welcome!' });
+});
+
 app.get('/', (req, res) => {
   res.redirect('/login');
 });
@@ -154,19 +158,14 @@ app.post('/login', async (req, res) => {
     });
 
   const match = await bcrypt.compare(req.body.password, user.password);
-  if (match) {
+  if (match && user.username != "") {
     req.session.user = user;
     req.session.save();
-  }
-  else {
-    console.log("Error: Incorrect Username or Password");
-  }
-
-  if (user.username != "") {
     res.redirect('/items');
   }
   else {
-    res.redirect('/register');
+    res.redirect('/login');
+    console.log("Error: Incorrect Username or Password");
   }
 
 });
@@ -347,14 +346,9 @@ app.get("/orders", (req, res) => {
     });
 });
 
-app.get('/welcometest', (req, res) => {
-  res.json({ status: 'success', message: 'Welcome!' });
-});
-
 // *****************************************************
 // <!-- Section 5 : Start Server-->
 // *****************************************************
 // starting the server and keeping the connection open to listen for more requests
-//module.exports = 
-app.listen(3000);
+module.exports = app.listen(3000);
 console.log('Server is listening on port 3000');
