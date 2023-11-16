@@ -285,14 +285,14 @@ app.post("/orders/create", async (req, res) => {
   var newOrderId = 0;
   await db.any(createOrderQuery)
   .then((data) => {
-    console.log(data.order_id);
+    newOrderId = data[0].order_id;
     //res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully created order")}`);
   })
   .catch((err) => {
     res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
   });
 
-  const itemsQuery = `INSERT INTO order_lines (order_id, item_id, quantity) SELECT ${newOrderId}, item_id, quantity FROM cart_lines WHERE cart_id = 1;`;
+  const itemsQuery = `INSERT INTO order_lines (order_id, item_id, quantity) SELECT ${newOrderId}, item_id, quantity FROM cart_lines WHERE cart_id = ${req.session.user.cart_id};`;
   await db.any(itemsQuery)
   .then((data) => {
     console.log("added order lines");
