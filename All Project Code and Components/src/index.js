@@ -314,9 +314,17 @@ app.get("/cart", (req, res) => {
 });
 
 app.post("/orders/create", async (req, res) => {
+
+  const itemCostQuery = `SELECT items.item_price, cart_lines.quantity FROM items JOIN cart_lines ON cart_lines.item_id = items.item_id
+  WHERE cart_lines.cart_id = ${req.session.user.cart_id};`
+
+  const itemCosts = await db.any(itemCostQuery);
+  var orderTotal = 0;
+  itemCosts.forEach((item) =>  orderTotal += (item.item_price * item.quantity));
+
   const currentDate = new Date().toDateString();
   const parsedZip = parseInt(req.body.shipping_zip);
-  const createOrderQuery = `INSERT INTO orders (order_id, order_date, shipping_address, shipping_city, shipping_state, shipping_country, shipping_zip, cart_id) VALUES (DEFAULT, '${currentDate}', '${req.body.shipping_address}', '${req.body.shipping_city}', '${req.body.shipping_state}', '${req.body.shipping_country}', ${parsedZip}, ${req.session.user.cart_id}) RETURNING *;`;
+  const createOrderQuery = `INSERT INTO orders (order_id, order_date, shipping_address, shipping_city, shipping_state, shipping_country, shipping_zip, order_total, cart_id) VALUES (DEFAULT, '${currentDate}', '${req.body.shipping_address}', '${req.body.shipping_city}', '${req.body.shipping_state}', '${req.body.shipping_country}', ${parsedZip}, ${orderTotal}, ${req.session.user.cart_id}) RETURNING *;`;
 
   var newOrderId = 0;
   await db.any(createOrderQuery)
@@ -340,6 +348,7 @@ app.post("/orders/create", async (req, res) => {
   const deleteQuery = `DELETE FROM cart_lines WHERE cart_id = ${req.session.user.cart_id};`;
   await db.any(deleteQuery)
   .then((data) => {
+    req.session.user.funds_avail -= orderTotal;
     res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully created order")}`);
   })
   .catch((err) => {

@@ -8,6 +8,7 @@
                         <tr>
                             <th>Order ID</th>
                             <th>Order Date</th>
+                            <th>Order Total</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -19,10 +20,13 @@
                                 <td>
                                     <%=order.order_date%>
                                 </td>
+                                <td>
+                                    <p>$<%= order.order_total%></p>
+                                </td>
                                 <form action = "/orders/delete" method = "POST">
                                 <input hidden name = "order_id" value = "<%=order.order_id%>">
                                 <td>
-                                    <button type = "submit" class = "btn-primary">Delete Order</button></td>    
+                                    <button type = "submit" class = "btn-primary">Cancel Order</button></td>    
                                 </form>
                             </tr>
                             <% }); %>
