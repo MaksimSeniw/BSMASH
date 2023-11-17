@@ -65,6 +65,7 @@ const user = {
   username: undefined,
   funds_avail: undefined,
   favorite_type: undefined,
+  email: undefined,
   cart_id: undefined
 };
 
@@ -108,7 +109,7 @@ app.post('/register', async (req, res) => {
   const newCartId = newCartResult.cart_id;
 
   // To-DO: Insert username and hashed password into the 'users' table
-  const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, cart_id) VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', ${newCartId})  RETURNING *;`;
+  const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, email, cart_id) VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', '${req.body.email}', ${newCartId})  RETURNING *;`;
   if (req.body.username != "") {
     db.one(query)
       .then((data) => {
@@ -142,6 +143,24 @@ app.post('/login', async (req, res) => {
   const password = req.body.password;
   const query = `SELECT * FROM customers WHERE username = '${username}'`;
 
+  await db.one(query, username)
+    .then((data) => {
+      user.customer_id = data.customer_id;
+      user.first_name = data.first_name;
+      user.last_name = data.last_name;
+      user.username = data.username;
+      user.password = data.password;
+      user.funds_avail = data.funds_avail;
+      user.favorite_type = data.favorite_type;
+      user.email = data.email;
+      user.cart_id = data.cart_id;
+    })
+    .catch((err) => {
+      console.log('Error accessing the DB');
+      console.log(err);
+      res.redirect('/login');
+    });
+
   try {
     const data = await db.oneOrNone(query, [username]);
 
@@ -157,6 +176,7 @@ app.post('/login', async (req, res) => {
           password: data.password,
           funds_avail: data.funds_avail,
           favorite_type: data.favorite_type,
+          email: data.email,
           cart_id: data.cart_id
         };
         req.session.save();
@@ -196,7 +216,10 @@ app.get("/profile", (req, res) => {
     username: req.session.user.username,
     funds_avail: req.session.user.funds_avail,
     favorite_type: req.session.user.favorite_type,
+    email: req.session.user.email,
     cart_id: req.session.user.cart_id,
+    error: req.query.error,
+    message: req.query.message,
   });
 });
 
@@ -357,6 +380,82 @@ app.get("/orders", (req, res) => {
         message: req.query.message,
       });
     });
+});
+
+
+
+//edit profile
+app.get('/edit_profile', (req, res) => {
+  res.render("pages/edit_profile", {
+    error: req.query.error,
+    message: req.query.message,
+  })
+});
+//posting edited profile
+app.post('/edit_profile', async (req, res) => {
+  
+  var username = "";
+  var first_name = "";
+  var last_name = "";
+  var favorite_type = "";
+  var email ="";
+  var password = "";
+  
+  if(req.body.first_name != ""){
+    first_name = req.body.first_name;
+  }
+  else{
+    first_name = req.session.user.first_name;
+  }
+  if(req.body.last_name != ""){
+    last_name = req.body.last_name;
+  }
+  else{
+    last_name = req.session.user.last_name;
+  }
+  if(req.body.username != ""){
+    username = req.body.username;
+  }
+  else{
+    username = req.session.user.username;
+  }
+  if(req.body.favorite_type != ""){
+    favorite_type = req.body.favorite_type;
+  }
+  else{
+    favorite_type = req.session.user.favorite_type;
+  }
+
+  if(req.body.email != ""){
+    email = req.body.email;
+  }
+  else{
+    email = req.session.user.email;
+  }
+  if(req.body.password != ""){
+    password = await bcrypt.hash(req.body.password, 10);
+  }
+  else{
+    const passQuery = await db.one(`SELECT password FROM customers WHERE username = '${req.session.user.username}';`);
+    password = passQuery.password;
+  }
+
+  
+    const query = `UPDATE customers 
+    SET first_name = '${first_name}', last_name = '${last_name}', username = '${username}', favorite_type = '${favorite_type}', email = '${email}', password = '${password}'
+    WHERE customer_id = '${req.session.user.customer_id}'
+    RETURNING *;`;
+
+    console.log(req.session.user.customer_id);
+
+    db.one(query)
+      .then((data) => {
+        res.redirect(`/login?error=false&message=${encodeURIComponent("Successfully update profile. Please login again.")}`);
+      })
+      .catch((err) => {
+        res.redirect(`/profile?error=true&message=${encodeURIComponent("Failed to update profile information")}`);
+        return console.log(err);
+      });
 });
 
 // *****************************************************
