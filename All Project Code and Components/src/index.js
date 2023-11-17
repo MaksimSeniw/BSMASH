@@ -140,7 +140,9 @@ app.get('/login', (req, res) => {
 // post login
 app.post('/login', async (req, res) => {
   const username = req.body.username;
+  const password = req.body.password;
   const query = `SELECT * FROM customers WHERE username = '${username}'`;
+
   await db.one(query, username)
     .then((data) => {
       user.customer_id = data.customer_id;
@@ -159,18 +161,39 @@ app.post('/login', async (req, res) => {
       res.redirect('/login');
     });
 
-  const match = await bcrypt.compare(req.body.password, user.password);
-  if (match && user.username != "") {
-    req.session.user = user;
-    req.session.save();
-    res.redirect('/items');
-  }
-  else {
-    res.redirect('/login');
-    console.log("Error: Incorrect Username or Password");
-  }
+  try {
+    const data = await db.oneOrNone(query, [username]);
 
+    if (data) {
+      const match = await bcrypt.compare(password, data.password);
+      if (match) {
+        // Set user session and redirect to items page
+        req.session.user = {
+          customer_id: data.customer_id,
+          first_name: data.first_name,
+          last_name: data.last_name,
+          username: data.username,
+          password: data.password,
+          funds_avail: data.funds_avail,
+          favorite_type: data.favorite_type,
+          email: data.email,
+          cart_id: data.cart_id
+        };
+        req.session.save();
+        return res.redirect('/items');
+      }
+    }
+
+    // Handle login failure
+    console.log("Error: Incorrect Username or Password");
+    res.redirect('/login?error=true&message=' + encodeURIComponent('Incorrect Username or Password'));
+  } catch (err) {
+    console.error('Error accessing the DB:', err);
+    res.redirect('/login?error=true&message=' + encodeURIComponent('An error occurred during login'));
+  }
 });
+
+
 
 // Authentication Middleware.
 const auth = (req, res, next) => {
@@ -232,21 +255,29 @@ app.get("/items", (req, res) => {
     });
 });
 
-//add to cart
-app.post("/cart/add", (req, res) => {
+app.post("/cart/add", async (req, res) => {
   const item_id = parseInt(req.body.item_id);
   const cart_id = parseInt(req.session.user.cart_id);
   const quantity = parseInt(req.body.quantity);
-  const query = `INSERT INTO cart_lines (line_id, cart_id, item_id, quantity) VALUES (DEFAULT, ${cart_id}, ${item_id}, ${quantity});`;
 
-  db.one(query)
-    .then((data) => {
-      res.redirect(`/items?error=false&message=${encodeURIComponent("Successfully added to cart")}`);
-    })
-    .catch((err) => {
-      res.redirect(`/items?error=true&message=${encodeURIComponent("Failed to add to cart")}`);
-    });
+  // Check if the item already exists in the cart
+  const checkQuery = `SELECT * FROM cart_lines WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
+  const existingItem = await db.oneOrNone(checkQuery);
+
+  if (existingItem) {
+    // Update the quantity of the existing item
+    const newQuantity = existingItem.quantity + quantity;
+    const updateQuery = `UPDATE cart_lines SET quantity = ${newQuantity} WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
+    await db.none(updateQuery);
+  } else {
+    // Insert the new item
+    const insertQuery = `INSERT INTO cart_lines (line_id, cart_id, item_id, quantity) VALUES (DEFAULT, ${cart_id}, ${item_id}, ${quantity});`;
+    await db.none(insertQuery);
+  }
+
+  res.redirect(`/items?error=false&message=${encodeURIComponent("Successfully updated cart")}`);
 });
+
 
 app.post("/cart/delete", (req, res) => {
   const item_id = parseInt(req.body.item_id);
