@@ -30,6 +30,7 @@ CREATE TABLE orders(
   shipping_state VARCHAR(1000),
   shipping_country VARCHAR(1000),
   shipping_zip INT,
+  order_total DECIMAL(6,2),
   cart_id INT
 );
 

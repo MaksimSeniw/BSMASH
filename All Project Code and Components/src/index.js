@@ -390,40 +390,53 @@ app.post("/cart/save-for-later", async (req, res) => {
 
 // NEW CHANGES END HERE
 app.post("/orders/create", async (req, res) => {
-  const currentDate = new Date().toDateString();
-  const parsedZip = parseInt(req.body.shipping_zip);
-  const createOrderQuery = `INSERT INTO orders (order_id, order_date, shipping_address, shipping_city, shipping_state, shipping_country, shipping_zip, cart_id) VALUES (DEFAULT, '${currentDate}', '${req.body.shipping_address}', '${req.body.shipping_city}', '${req.body.shipping_state}', '${req.body.shipping_country}', ${parsedZip}, ${req.session.user.cart_id}) RETURNING *;`;
 
-  var newOrderId = 0;
-  await db.any(createOrderQuery)
-  .then((data) => {
-    newOrderId = data[0].order_id;
-    //res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully created order")}`);
-  })
-  .catch((err) => {
-    res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
-  });
+  const itemCostQuery = `SELECT items.item_price, cart_lines.quantity FROM items JOIN cart_lines ON cart_lines.item_id = items.item_id
+  WHERE cart_lines.cart_id = ${req.session.user.cart_id};`
 
-  const itemsQuery = `INSERT INTO order_lines (order_id, item_id, quantity) SELECT ${newOrderId}, item_id, quantity FROM cart_lines WHERE cart_id = ${req.session.user.cart_id};`;
-  await db.any(itemsQuery)
-  .then((data) => {
-    console.log("added order lines");
-  })
-  .catch((err) => {
-    res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
-  });
+  const itemCosts = await db.any(itemCostQuery);
+  var orderTotal = 0;
+  itemCosts.forEach((item) => orderTotal += (item.item_price * item.quantity));
+  if (req.session.user.funds_avail - orderTotal < 0) {
+    res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order - Insufficient funds")}`);
+  }
+  else {
+    const currentDate = new Date().toDateString();
+    const parsedZip = parseInt(req.body.shipping_zip);
+    const createOrderQuery = `INSERT INTO orders (order_id, order_date, shipping_address, shipping_city, shipping_state, shipping_country, shipping_zip, order_total, cart_id) VALUES (DEFAULT, '${currentDate}', '${req.body.shipping_address}', '${req.body.shipping_city}', '${req.body.shipping_state}', '${req.body.shipping_country}', ${parsedZip}, ${orderTotal}, ${req.session.user.cart_id}) RETURNING *;`;
 
-  const deleteQuery = `DELETE FROM cart_lines WHERE cart_id = ${req.session.user.cart_id};`;
-  await db.any(deleteQuery)
-  .then((data) => {
-    res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully created order")}`);
-  })
-  .catch((err) => {
-    res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
-  });
+    var newOrderId = 0;
+    await db.any(createOrderQuery)
+      .then((data) => {
+        newOrderId = data[0].order_id;
+        //res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully created order")}`);
+      })
+      .catch((err) => {
+        res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
+      });
+
+    const itemsQuery = `INSERT INTO order_lines (order_id, item_id, quantity) SELECT ${newOrderId}, item_id, quantity FROM cart_lines WHERE cart_id = ${req.session.user.cart_id};`;
+    await db.any(itemsQuery)
+      .then((data) => {
+        console.log("added order lines");
+      })
+      .catch((err) => {
+        res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
+      });
+
+    const deleteQuery = `DELETE FROM cart_lines WHERE cart_id = ${req.session.user.cart_id};`;
+    await db.any(deleteQuery)
+      .then((data) => {
+        req.session.user.funds_avail -= orderTotal;
+        res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully created order")}`);
+      })
+      .catch((err) => {
+        res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
+      });
+  }
 });
 
-app.post("/orders/delete", async (req, res) =>{
+app.post("/orders/delete", async (req, res) => {
   const linesQuery = `DELETE FROM order_lines WHERE order_id = ${req.body.order_id};`;
   const orderQuery = `DELETE FROM orders WHERE order_id = ${req.body.order_id};`;
 
@@ -469,69 +482,81 @@ app.get('/edit_profile', (req, res) => {
 });
 //posting edited profile
 app.post('/edit_profile', async (req, res) => {
-  
+
   var username = "";
   var first_name = "";
   var last_name = "";
   var favorite_type = "";
-  var email ="";
+  var email = "";
+  var funds_avail = 0.0;
   var password = "";
-  
-  if(req.body.first_name != ""){
+
+  if (req.body.first_name != "") {
     first_name = req.body.first_name;
   }
-  else{
+  else {
     first_name = req.session.user.first_name;
   }
-  if(req.body.last_name != ""){
+  if (req.body.last_name != "") {
     last_name = req.body.last_name;
   }
-  else{
+  else {
     last_name = req.session.user.last_name;
   }
-  if(req.body.username != ""){
+  if (req.body.username != "") {
     username = req.body.username;
   }
-  else{
+  else {
     username = req.session.user.username;
   }
-  if(req.body.favorite_type != ""){
+  if (req.body.favorite_type != "") {
     favorite_type = req.body.favorite_type;
   }
-  else{
+  else {
     favorite_type = req.session.user.favorite_type;
   }
 
-  if(req.body.email != ""){
+  if (req.body.email != "") {
     email = req.body.email;
   }
-  else{
+  else {
     email = req.session.user.email;
   }
-  if(req.body.password != ""){
-    password = await bcrypt.hash(req.body.password, 10);
+
+  if(req.body.funds_avail != ""){
+    funds_avail = parseFloat(req.session.user.funds_avail) + parseFloat(req.body.funds_avail);
+    console.log(parseFloat(req.body.funds_avail));
+    console.log(req.session.user.funds_avail);
+    console.log(parseFloat(req.session.user.funds_avail) + parseFloat(req.body.funds_avail));
   }
   else{
+    funds_avail = req.session.user.funds_avail;
+  }
+
+  if (req.body.password != "") {
+    password = await bcrypt.hash(req.body.password, 10);
+  }
+  else {
     const passQuery = await db.one(`SELECT password FROM customers WHERE username = '${req.session.user.username}';`);
     password = passQuery.password;
   }
 
-  
-    const query = `UPDATE customers 
-    SET first_name = '${first_name}', last_name = '${last_name}', username = '${username}', favorite_type = '${favorite_type}', email = '${email}', password = '${password}'
+
+  const query = `UPDATE customers 
+    SET first_name = '${first_name}', last_name = '${last_name}', username = '${username}', favorite_type = '${favorite_type}', email = '${email}', funds_avail = ${funds_avail}, password = '${password}'
     WHERE customer_id = '${req.session.user.customer_id}'
     RETURNING *;`;
 
-    console.log(req.session.user.customer_id);
+  console.log(req.session.user.customer_id);
 
-    db.one(query)
-      .then((data) => {
-        res.redirect(`/login?error=false&message=${encodeURIComponent("Successfully update profile. Please login again.")}`);
-      })
-      .catch((err) => {
-        res.redirect(`/profile?error=true&message=${encodeURIComponent("Failed to update profile information")}`);
-        return console.log(err);
-      });
+  db.one(query)
+    .then((data) => {
+      res.redirect(`/logout?error=false&message=${encodeURIComponent("Successfully update profile. Please login again.")}`);
+    })
+    .catch((err) => {
+      res.redirect(`/profile?error=true&message=${encodeURIComponent("Failed to update profile information")}`);
+      return console.log(err);
+    });
 });
 
 // *****************************************************
