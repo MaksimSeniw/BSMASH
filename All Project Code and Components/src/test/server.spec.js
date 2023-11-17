@@ -29,7 +29,7 @@ describe('Server!', () => {
     chai
       .request(server)
       .post('/register')
-      .send({ first_name: 'John', last_name: 'Doe', username: 'test', password: 'test', favorite_type: 'fedora' })
+      .send({ first_name: 'John', last_name: 'Doe', username: 'test', password: 'test', favorite_type: 'fedora', email: 'test@user.com' })
       .redirects(0)
       .end((err, res) => {
         expect(res).to.have.status(302);
@@ -44,7 +44,7 @@ describe('Server!', () => {
     chai
       .request(server)
       .post('/register')
-      .send({ first_name: 'John', last_name: 'Doe', username: "", password: 'test', favorite_type: 'fedora' })
+      .send({ first_name: 'John', last_name: 'Doe', username: "", password: 'test', favorite_type: 'fedora', email: 'test@user.com' })
       .redirects(0)
       .end((err, res) => {
         expect(res).to.have.status(302);
@@ -76,13 +76,14 @@ describe('Server!', () => {
       .request(server)
       .post('/login')
       .send({ username: 'test', password: 'incorrect' })
-      .redirects(0)
+      .redirects(0) // To capture the redirect response
       .end((err, res) => {
-        expect(res).to.have.status(302);
-        res.should.redirectTo('/login')
+        expect(res).to.have.status(302); // Expecting a redirect
+        expect(res).to.redirectTo('/login?error=true&message=' + encodeURIComponent('Incorrect Username or Password'));
         done();
       });
   });
+  
 
   // ===========================================================================
   // TO-DO: Part A Login unit test case

@@ -96,6 +96,7 @@
                 </table>
             </div>
             <!-- NEW CHANGES END HERE FOR SAVED FOR LATER -->
+        <% if(cart_lines.length > 0) { %>
             <div class = "container text-center">
                 <form action = "/orders/create" method = "POST">
                     <label for="shipping_address" class="form-label">Shipping Address</label>
@@ -115,6 +116,7 @@
                     <button type = "submit" class = "btn-primary">Place Order</button>
                 </form>
             </div>
+            <% } %>
         </main>
 
         <%- include ('../partials/footer') %>

@@ -65,6 +65,7 @@ const user = {
   username: undefined,
   funds_avail: undefined,
   favorite_type: undefined,
+  email: undefined,
   cart_id: undefined
 };
 
@@ -108,7 +109,7 @@ app.post('/register', async (req, res) => {
   const newCartId = newCartResult.cart_id;
 
   // To-DO: Insert username and hashed password into the 'users' table
-  const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, cart_id) VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', ${newCartId})  RETURNING *;`;
+  const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, email, cart_id) VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', '${req.body.email}', ${newCartId})  RETURNING *;`;
   if (req.body.username != "") {
     db.one(query)
       .then((data) => {
@@ -139,7 +140,9 @@ app.get('/login', (req, res) => {
 // post login
 app.post('/login', async (req, res) => {
   const username = req.body.username;
+  const password = req.body.password;
   const query = `SELECT * FROM customers WHERE username = '${username}'`;
+
   await db.one(query, username)
     .then((data) => {
       user.customer_id = data.customer_id;
@@ -149,6 +152,7 @@ app.post('/login', async (req, res) => {
       user.password = data.password;
       user.funds_avail = data.funds_avail;
       user.favorite_type = data.favorite_type;
+      user.email = data.email;
       user.cart_id = data.cart_id;
     })
     .catch((err) => {
@@ -157,18 +161,39 @@ app.post('/login', async (req, res) => {
       res.redirect('/login');
     });
 
-  const match = await bcrypt.compare(req.body.password, user.password);
-  if (match && user.username != "") {
-    req.session.user = user;
-    req.session.save();
-    res.redirect('/items');
-  }
-  else {
-    res.redirect('/login');
-    console.log("Error: Incorrect Username or Password");
-  }
+  try {
+    const data = await db.oneOrNone(query, [username]);
 
+    if (data) {
+      const match = await bcrypt.compare(password, data.password);
+      if (match) {
+        // Set user session and redirect to items page
+        req.session.user = {
+          customer_id: data.customer_id,
+          first_name: data.first_name,
+          last_name: data.last_name,
+          username: data.username,
+          password: data.password,
+          funds_avail: data.funds_avail,
+          favorite_type: data.favorite_type,
+          email: data.email,
+          cart_id: data.cart_id
+        };
+        req.session.save();
+        return res.redirect('/items');
+      }
+    }
+
+    // Handle login failure
+    console.log("Error: Incorrect Username or Password");
+    res.redirect('/login?error=true&message=' + encodeURIComponent('Incorrect Username or Password'));
+  } catch (err) {
+    console.error('Error accessing the DB:', err);
+    res.redirect('/login?error=true&message=' + encodeURIComponent('An error occurred during login'));
+  }
 });
+
+
 
 // Authentication Middleware.
 const auth = (req, res, next) => {
@@ -191,7 +216,10 @@ app.get("/profile", (req, res) => {
     username: req.session.user.username,
     funds_avail: req.session.user.funds_avail,
     favorite_type: req.session.user.favorite_type,
+    email: req.session.user.email,
     cart_id: req.session.user.cart_id,
+    error: req.query.error,
+    message: req.query.message,
   });
 });
 
@@ -227,21 +255,29 @@ app.get("/items", (req, res) => {
     });
 });
 
-//add to cart
-app.post("/cart/add", (req, res) => {
+app.post("/cart/add", async (req, res) => {
   const item_id = parseInt(req.body.item_id);
   const cart_id = parseInt(req.session.user.cart_id);
   const quantity = parseInt(req.body.quantity);
-  const query = `INSERT INTO cart_lines (line_id, cart_id, item_id, quantity) VALUES (DEFAULT, ${cart_id}, ${item_id}, ${quantity});`;
 
-  db.one(query)
-    .then((data) => {
-      res.redirect(`/items?error=false&message=${encodeURIComponent("Successfully added to cart")}`);
-    })
-    .catch((err) => {
-      res.redirect(`/items?error=true&message=${encodeURIComponent("Failed to add to cart")}`);
-    });
+  // Check if the item already exists in the cart
+  const checkQuery = `SELECT * FROM cart_lines WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
+  const existingItem = await db.oneOrNone(checkQuery);
+
+  if (existingItem) {
+    // Update the quantity of the existing item
+    const newQuantity = existingItem.quantity + quantity;
+    const updateQuery = `UPDATE cart_lines SET quantity = ${newQuantity} WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
+    await db.none(updateQuery);
+  } else {
+    // Insert the new item
+    const insertQuery = `INSERT INTO cart_lines (line_id, cart_id, item_id, quantity) VALUES (DEFAULT, ${cart_id}, ${item_id}, ${quantity});`;
+    await db.none(insertQuery);
+  }
+
+  res.redirect(`/items?error=false&message=${encodeURIComponent("Successfully updated cart")}`);
 });
+
 
 app.post("/cart/delete", (req, res) => {
   const item_id = parseInt(req.body.item_id);
@@ -440,6 +476,82 @@ app.get("/orders", (req, res) => {
         message: req.query.message,
       });
     });
+});
+
+
+
+//edit profile
+app.get('/edit_profile', (req, res) => {
+  res.render("pages/edit_profile", {
+    error: req.query.error,
+    message: req.query.message,
+  })
+});
+//posting edited profile
+app.post('/edit_profile', async (req, res) => {
+  
+  var username = "";
+  var first_name = "";
+  var last_name = "";
+  var favorite_type = "";
+  var email ="";
+  var password = "";
+  
+  if(req.body.first_name != ""){
+    first_name = req.body.first_name;
+  }
+  else{
+    first_name = req.session.user.first_name;
+  }
+  if(req.body.last_name != ""){
+    last_name = req.body.last_name;
+  }
+  else{
+    last_name = req.session.user.last_name;
+  }
+  if(req.body.username != ""){
+    username = req.body.username;
+  }
+  else{
+    username = req.session.user.username;
+  }
+  if(req.body.favorite_type != ""){
+    favorite_type = req.body.favorite_type;
+  }
+  else{
+    favorite_type = req.session.user.favorite_type;
+  }
+
+  if(req.body.email != ""){
+    email = req.body.email;
+  }
+  else{
+    email = req.session.user.email;
+  }
+  if(req.body.password != ""){
+    password = await bcrypt.hash(req.body.password, 10);
+  }
+  else{
+    const passQuery = await db.one(`SELECT password FROM customers WHERE username = '${req.session.user.username}';`);
+    password = passQuery.password;
+  }
+
+  
+    const query = `UPDATE customers 
+    SET first_name = '${first_name}', last_name = '${last_name}', username = '${username}', favorite_type = '${favorite_type}', email = '${email}', password = '${password}'
+    WHERE customer_id = '${req.session.user.customer_id}'
+    RETURNING *;`;
+
+    console.log(req.session.user.customer_id);
+
+    db.one(query)
+      .then((data) => {
+        res.redirect(`/login?error=false&message=${encodeURIComponent("Successfully update profile. Please login again.")}`);
+      })
+      .catch((err) => {
+        res.redirect(`/profile?error=true&message=${encodeURIComponent("Failed to update profile information")}`);
+        return console.log(err);
+      });
 });
 
 // *****************************************************

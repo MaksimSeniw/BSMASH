@@ -7,6 +7,7 @@ CREATE TABLE customers(
   password VARCHAR(1000),
   funds_avail DECIMAL(6,2),
   favorite_type VARCHAR(1000),
+  email VARCHAR(1000),
   cart_id INT
 );
 
