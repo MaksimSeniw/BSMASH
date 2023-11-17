@@ -227,21 +227,29 @@ app.get("/items", (req, res) => {
     });
 });
 
-//add to cart
-app.post("/cart/add", (req, res) => {
+app.post("/cart/add", async (req, res) => {
   const item_id = parseInt(req.body.item_id);
   const cart_id = parseInt(req.session.user.cart_id);
   const quantity = parseInt(req.body.quantity);
-  const query = `INSERT INTO cart_lines (line_id, cart_id, item_id, quantity) VALUES (DEFAULT, ${cart_id}, ${item_id}, ${quantity});`;
 
-  db.one(query)
-    .then((data) => {
-      res.redirect(`/items?error=false&message=${encodeURIComponent("Successfully added to cart")}`);
-    })
-    .catch((err) => {
-      res.redirect(`/items?error=true&message=${encodeURIComponent("Failed to add to cart")}`);
-    });
+  // Check if the item already exists in the cart
+  const checkQuery = `SELECT * FROM cart_lines WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
+  const existingItem = await db.oneOrNone(checkQuery);
+
+  if (existingItem) {
+    // Update the quantity of the existing item
+    const newQuantity = existingItem.quantity + quantity;
+    const updateQuery = `UPDATE cart_lines SET quantity = ${newQuantity} WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
+    await db.none(updateQuery);
+  } else {
+    // Insert the new item
+    const insertQuery = `INSERT INTO cart_lines (line_id, cart_id, item_id, quantity) VALUES (DEFAULT, ${cart_id}, ${item_id}, ${quantity});`;
+    await db.none(insertQuery);
+  }
+
+  res.redirect(`/items?error=false&message=${encodeURIComponent("Successfully updated cart")}`);
 });
+
 
 app.post("/cart/delete", (req, res) => {
   const item_id = parseInt(req.body.item_id);
