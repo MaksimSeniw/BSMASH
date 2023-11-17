@@ -139,36 +139,41 @@ app.get('/login', (req, res) => {
 // post login
 app.post('/login', async (req, res) => {
   const username = req.body.username;
+  const password = req.body.password;
   const query = `SELECT * FROM customers WHERE username = '${username}'`;
-  await db.one(query, username)
-    .then((data) => {
-      user.customer_id = data.customer_id;
-      user.first_name = data.first_name;
-      user.last_name = data.last_name;
-      user.username = data.username;
-      user.password = data.password;
-      user.funds_avail = data.funds_avail;
-      user.favorite_type = data.favorite_type;
-      user.cart_id = data.cart_id;
-    })
-    .catch((err) => {
-      console.log('Error accessing the DB');
-      console.log(err);
-      res.redirect('/login');
-    });
 
-  const match = await bcrypt.compare(req.body.password, user.password);
-  if (match && user.username != "") {
-    req.session.user = user;
-    req.session.save();
-    res.redirect('/items');
-  }
-  else {
-    res.redirect('/login');
+  try {
+    const data = await db.oneOrNone(query, [username]);
+
+    if (data) {
+      const match = await bcrypt.compare(password, data.password);
+      if (match) {
+        // Set user session and redirect to items page
+        req.session.user = {
+          customer_id: data.customer_id,
+          first_name: data.first_name,
+          last_name: data.last_name,
+          username: data.username,
+          password: data.password,
+          funds_avail: data.funds_avail,
+          favorite_type: data.favorite_type,
+          cart_id: data.cart_id
+        };
+        req.session.save();
+        return res.redirect('/items');
+      }
+    }
+
+    // Handle login failure
     console.log("Error: Incorrect Username or Password");
+    res.redirect('/login?error=true&message=' + encodeURIComponent('Incorrect Username or Password'));
+  } catch (err) {
+    console.error('Error accessing the DB:', err);
+    res.redirect('/login?error=true&message=' + encodeURIComponent('An error occurred during login'));
   }
-
 });
+
+
 
 // Authentication Middleware.
 const auth = (req, res, next) => {
