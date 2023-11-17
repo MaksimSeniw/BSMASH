@@ -40,11 +40,62 @@
                                 <td>
                                     <button type = "submit" class = "btn-primary">Delete from Cart</button></td>    
                                 </form>
+                                <!-- NEW CHANGES START HERE -->
+                                <td>
+                                    <form action="/cart/save-for-later" method="POST">
+                                        <input type="hidden" name="item_id" value="<%- cart_line.item_id %>">
+                                        <button type="submit" class="btn-primary">Save For Later</button>
+                                    </form>
+                                </td>
+                                <!-- NEW CHANGES END HERE -->
                             </tr>
                             <% }); %>
                     </tbody>
                 </table>
             </div>
+
+            <!-- NEW CHANGES FOR SAVED FOR LATER -->
+            <div class="container">
+                <h2>Saved For Later</h2>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Hat Name</th>
+                            <th>Hat Type</th>
+                            <th>Description</th>
+                            <th>Price (in $USD)</th>
+                            <th>Quantity</th>
+                            <th>Actions</th>
+                            <th>Image</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% saved_for_later.forEach(function(item){ %>
+                            <tr>
+                                <th scope="row"><%= item.item_name %></th>
+                                <td><%= item.item_type %></td>
+                                <td><%= item.item_description %></td>
+                                <td><%= item.item_price %></td>
+                                <td><%= item.quantity %></td>
+                                <td>
+                                    <form action="/cart/move-to-cart" method="POST">
+                                        <input type="hidden" name="item_id" value="<%= item.item_id %>">
+                                        <button type="submit" class="btn-primary">Move to Cart</button>
+                                    </form>
+                                    <form action="/cart/delete-saved-item" method="POST">
+                                        <input type="hidden" name="item_id" value="<%= item.item_id %>">
+                                        <button type="submit" class="btn-danger">Delete Item</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <img src="<%- item.item_image_link %>" alt="<%- item.item_name %>" width="200" height="200">
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+            <!-- NEW CHANGES END HERE FOR SAVED FOR LATER -->
             <div class = "container text-center">
                 <form action = "/orders/create" method = "POST">
                     <label for="shipping_address" class="form-label">Shipping Address</label>

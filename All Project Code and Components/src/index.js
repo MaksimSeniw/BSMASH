@@ -257,26 +257,122 @@ app.post("/cart/delete", (req, res) => {
     });
 });
 
-app.get("/cart", (req, res) => {
-  const query = `SELECT * FROM items INNER JOIN cart_lines ON items.item_id = cart_lines.item_id WHERE cart_id = ${req.session.user.cart_id}`;
+// app.get("/cart", (req, res) => {
+//   const query = `SELECT * FROM items INNER JOIN cart_lines ON items.item_id = cart_lines.item_id WHERE cart_id = ${req.session.user.cart_id}`;
 
-  db.any(query)
-    .then((data) => {
+//   db.any(query)
+//     .then((data) => {
+//       res.render("pages/cart", {
+//         cart_lines: data,
+//         error: req.query.error,
+//         message: req.query.message,
+//       });
+//     })
+//     .catch((err) => {
+//       res.render("pages/cart", {
+//         cart_lines: [],
+//         error: req.query.error,
+//         message: req.query.message,
+//       });
+//     });
+// });
+// NEW CHANGES START HERE
+
+
+app.get("/cart", async (req, res) => {
+  try {
+      const cartQuery = `SELECT * FROM items INNER JOIN cart_lines ON items.item_id = cart_lines.item_id WHERE cart_id = ${req.session.user.cart_id}`;
+      const savedForLaterQuery = `SELECT * FROM items INNER JOIN saved_for_later ON items.item_id = saved_for_later.item_id WHERE customer_id = ${req.session.user.customer_id}`;
+
+      const [cartData, savedForLaterData] = await Promise.all([
+          db.any(cartQuery),
+          db.any(savedForLaterQuery)
+      ]);
+
       res.render("pages/cart", {
-        cart_lines: data,
-        error: req.query.error,
-        message: req.query.message,
+          cart_lines: cartData,
+          saved_for_later: savedForLaterData, 
+          error: req.query.error,
+          message: req.query.message,
       });
-    })
-    .catch((err) => {
+  } catch (error) {
+      console.error("Error fetching data for cart:", error);
       res.render("pages/cart", {
-        cart_lines: [],
-        error: req.query.error,
-        message: req.query.message,
+          cart_lines: [],
+          saved_for_later: [], 
+          error: req.query.error,
+          message: req.query.message,
       });
-    });
+  }
 });
 
+
+
+
+
+app.post("/cart/move-to-cart", async (req, res) => {
+  const item_id = parseInt(req.body.item_id);
+  const customer_id = req.session.user.customer_id;
+
+  try {
+      
+      const removeFromSavedQuery = `DELETE FROM saved_for_later WHERE customer_id = ${customer_id} AND item_id = ${item_id};`;
+      await db.none(removeFromSavedQuery);
+
+     
+      const addToCartQuery = `INSERT INTO cart_lines (cart_id, item_id, quantity) VALUES (${req.session.user.cart_id}, ${item_id}, 1) RETURNING *;`;
+      await db.one(addToCartQuery);
+
+      res.redirect("/cart");
+  } catch (error) {
+      console.error("Error moving item to cart:", error);
+      res.redirect("/cart?error=true&message=Failed to move item to cart");
+  }
+});
+
+
+app.post("/cart/delete-saved-item", async (req, res) => {
+  const item_id = parseInt(req.body.item_id);
+  const customer_id = req.session.user.customer_id;
+
+  try {
+     
+      const deleteFromSavedQuery = `DELETE FROM saved_for_later WHERE customer_id = ${customer_id} AND item_id = ${item_id};`;
+      await db.none(deleteFromSavedQuery);
+
+      res.redirect("/cart");
+  } catch (error) {
+      console.error("Error deleting item from Saved For Later:", error);
+      res.redirect("/cart?error=true&message=Failed to delete item from Saved For Later");
+  }
+});
+
+
+app.post("/cart/save-for-later", async (req, res) => {
+  const item_id = parseInt(req.body.item_id);
+  const customer_id = req.session.user.customer_id;
+
+  try {
+      
+      const removeFromCartQuery = `DELETE FROM cart_lines WHERE cart_id = ${req.session.user.cart_id} AND item_id = ${item_id};`;
+      await db.none(removeFromCartQuery);
+
+
+      const addToSavedQuery = `INSERT INTO saved_for_later (customer_id, item_id, quantity) VALUES (${customer_id}, ${item_id}, 1) RETURNING *;`;
+      await db.one(addToSavedQuery);
+
+      res.redirect("/cart");
+  } catch (error) {
+      console.error("Error saving item for later:", error);
+      res.redirect("/cart?error=true&message=Failed to save item for later");
+  }
+});
+
+
+
+
+
+// NEW CHANGES END HERE
 app.post("/orders/create", async (req, res) => {
   const currentDate = new Date().toDateString();
   const parsedZip = parseInt(req.body.shipping_zip);

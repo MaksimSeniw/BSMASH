@@ -48,6 +48,23 @@ CREATE TABLE items(
   item_image_link VARCHAR(1000)
 );
 
+-- NEW CHANGES START HERE
+CREATE TABLE saved_for_later(
+  saved_id SERIAL PRIMARY KEY,
+  customer_id INT,
+  item_id INT,
+  quantity INT
+);
+
+ALTER TABLE saved_for_later
+ADD CONSTRAINT customer_id FOREIGN KEY (customer_id) REFERENCES customers (customer_id);
+
+ALTER TABLE saved_for_later
+ADD CONSTRAINT item_id FOREIGN KEY (item_id) REFERENCES items (item_id);
+
+
+-- NEW CHANGES END HERE
+
 ALTER TABLE customers
 ADD CONSTRAINT cart_id FOREIGN KEY (cart_id) REFERENCES carts (cart_id);
 
