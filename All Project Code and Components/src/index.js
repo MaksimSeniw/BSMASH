@@ -65,6 +65,7 @@ const user = {
   username: undefined,
   funds_avail: undefined,
   favorite_type: undefined,
+  email: undefined,
   cart_id: undefined
 };
 
@@ -108,7 +109,7 @@ app.post('/register', async (req, res) => {
   const newCartId = newCartResult.cart_id;
 
   // To-DO: Insert username and hashed password into the 'users' table
-  const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, cart_id) VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', ${newCartId})  RETURNING *;`;
+  const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, email, cart_id) VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', '${req.body.email}', ${newCartId})  RETURNING *;`;
   if (req.body.username != "") {
     db.one(query)
       .then((data) => {
@@ -149,6 +150,7 @@ app.post('/login', async (req, res) => {
       user.password = data.password;
       user.funds_avail = data.funds_avail;
       user.favorite_type = data.favorite_type;
+      user.email = data.email;
       user.cart_id = data.cart_id;
     })
     .catch((err) => {
@@ -191,6 +193,7 @@ app.get("/profile", (req, res) => {
     username: req.session.user.username,
     funds_avail: req.session.user.funds_avail,
     favorite_type: req.session.user.favorite_type,
+    email: req.session.user.email,
     cart_id: req.session.user.cart_id,
     error: req.query.error,
     message: req.query.message,
@@ -359,17 +362,12 @@ app.get('/edit_profile', (req, res) => {
 });
 //posting edited profile
 app.post('/edit_profile', async (req, res) => {
-  // const hash = await bcrypt.hash(req.body.password, 10);
-  // const newCartQuery = `INSERT INTO carts (cart_id) VALUES (DEFAULT) RETURNING *;`;
-  // const newCartResult = await db.one(newCartQuery);
-  // const newCartId = newCartResult.cart_id;
-
-  // const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, cart_id) 
-  // VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', ${newCartId})  RETURNING *;`;
+  
   var username = "";
   var first_name = "";
   var last_name = "";
   var favorite_type = "";
+  var email ="";
   var password = "";
   
   if(req.body.first_name != ""){
@@ -396,6 +394,13 @@ app.post('/edit_profile', async (req, res) => {
   else{
     favorite_type = req.session.user.favorite_type;
   }
+
+  if(req.body.email != ""){
+    email = req.body.email;
+  }
+  else{
+    email = req.session.user.email;
+  }
   if(req.body.password != ""){
     password = await bcrypt.hash(req.body.password, 10);
   }
@@ -406,7 +411,7 @@ app.post('/edit_profile', async (req, res) => {
 
   
     const query = `UPDATE customers 
-    SET first_name = '${first_name}', last_name = '${last_name}', username = '${username}', favorite_type = '${favorite_type}', password = '${password}'
+    SET first_name = '${first_name}', last_name = '${last_name}', username = '${username}', favorite_type = '${favorite_type}', email = '${email}', password = '${password}'
     WHERE customer_id = '${req.session.user.customer_id}'
     RETURNING *;`;
 
