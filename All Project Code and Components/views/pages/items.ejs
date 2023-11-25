@@ -5,11 +5,14 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
 
 body {
-  font-family: 'Open Sans', sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "segoe ui", roboto, oxygen, ubuntu, cantarell, "fira sans", "droid sans", "helvetica neue", Arial, sans-serif;
   font-weight: 300;
   line-height: 1.42em;
-  color:#A7A1AE;
-  background-color:#1F2739;
+  color:#0E1119;
+  background: #2BC0E4;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #EAECC6, #2BC0E4);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #EAECC6, #2BC0E4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
 }
 
 .container td {
@@ -35,19 +38,19 @@ body {
   padding-left:0%;  
 }
 
-/* Background-color of the odd rows */
-.container tr:nth-child(odd) {
+/* .container tr:nth-child(odd) {
 	  background-color: #323C50;
 }
 
-/* Background-color of the even rows */
 .container tr:nth-child(even) {
 	  background-color: #2C3446;
-}
+}*/
 
 .container th {
-	  background-color: #1F2739;
-}
+	  /* background-color: #1F2739; */
+      color: #0E1119;
+      font-size: large;
+} 
 
 .container td:first-child { color: #FB667A; }
 
@@ -59,15 +62,15 @@ body {
 }
 
 .container td:hover {
-  background-color: #FFF842;
-  color: #403E10;
+  background-color: #464A52;
+  color: #0E1119;
   font-weight: bold;
-  
-  box-shadow: #7F7C21 -1px 1px, #7F7C21 -2px 2px, #7F7C21 -3px 3px, #7F7C21 -4px 4px, #7F7C21 -5px 5px, #7F7C21 -6px 6px;
-  /* transform: translate3d(6px, -6px, 0); */
+  font-size: larger;
+  /* box-shadow: #7F7C21 -1px 1px, #7F7C21 -2px 2px, #7F7C21 -3px 3px, #7F7C21 -4px 4px, #7F7C21 -5px 5px, #7F7C21 -6px 6px; */
+  /* transform: translate3d(10px, -10px, 0); */
   
   transition-delay: 0s;
-	  transition-duration: 1s;
+	  transition-duration: .5s;
 	  transition-property: all;
   transition-timing-function: line;
 }
@@ -79,7 +82,7 @@ body {
 
 </style>
         <main>
-                <table class="container">
+                <table class="container" style="background-color:rgba(0, 0, 0, .03);">
                     <thead>
                         <tr>
                             <th>Name</th>
