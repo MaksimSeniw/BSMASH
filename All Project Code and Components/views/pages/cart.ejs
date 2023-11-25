@@ -1,6 +1,27 @@
 <%- include ('../partials/head') %> 
 <%- include ('../partials/menu') %>
 
+<script src= 
+    "https://smtpjs.com/v3/smtp.js"> 
+  </script> 
+  
+  <script type="text/javascript"> 
+    function sendEmail() { 
+      Email.send({ 
+        Host: "smtp.mailslurp.com", 
+        Username: "14037310-750a-4ea2-a92f-df4456ed7ba9@mailslurp.com", 
+        Password: "oxvpftwlkwvejaud", 
+        To: "maksimseniw@gmail.com", 
+        From: "seniwprogramming@gmail.com", 
+        Subject: "Your Hat Hub Order", 
+        Body: "Hello", 
+      }) 
+        .then(function (message) { 
+          alert("mail sent successfully") 
+        }); 
+    } 
+  </script> 
+
         <main>
             <div class="container">
                 <table class="table">
@@ -58,10 +79,12 @@
                     <label for="shipping_zip" class="form-label">Shipping Zip</label>
                     <input type = "text" id = "shipping_zip" name = "shipping_zip" placeholder = "Ex: 12345"/>
 
-                    <label for="email" class="form-label">Email</label>
-                    <input type = "text" id = "email" name = "email" placeholder = "abc@gmail.com"/>
+                    <!-- <button type = "submit" class = "btn-primary">Place Order</button> -->
+                    <form method="POST"> 
+                        <input type="button" value="Place Order" class = "btn-primary"
+                            onclick="sendEmail()" /> 
+                      </form> 
 
-                    <button type = "submit" class = "btn-primary">Place Order</button>
                 </form>
             </div>
         </main>
