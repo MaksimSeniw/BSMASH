@@ -86,18 +86,18 @@ ALTER TABLE order_lines
 ADD CONSTRAINT item_id FOREIGN KEY (item_id) REFERENCES items (item_id);
 
 INSERT INTO items (item_id, item_name, item_type, item_description, item_price, item_image_link)
-  VALUES (DEFAULT, 'Fedora', 'dress', 'A classic fedora hat mlady', 15.00, 'https://upload.wikimedia.org/wikipedia/commons/9/93/A_fedora_hat%2C_made_by_Borsalino.jpg'),
-  (DEFAULT, 'Snapback', 'casual', 'A flatbrim hat fit to you', 20.00, 'https://m.media-amazon.com/images/I/61It33zI5rL._AC_SX679_.jpg'),
-  (DEFAULT, 'Cowboy', 'costume', 'A hat to conquer the wild west', 25.00, 'https://s7.orientaltrading.com/is/image/OrientalTrading/PDP_VIEWER_IMAGE/adults-brown-cowboy-hat-with-hatband~ur30030bn'),
-  (DEFAULT, 'Beret', 'dress', 'A french classic, very artistic', 20.00, 'https://i5.walmartimages.com/seo/TopHeadwear-100-Wool-Beret-Hat-Cap-Black_409d2b32-ed99-4152-a66c-aae12831b1c7_1.f4756059da30205d1012f811409c4eaa.jpeg?odnHeight=640&odnWidth=640&odnBg=FFFFFF'),
-  (DEFAULT, 'Sombrero', 'costume', 'A hat for when you are feeling south of the border', 20.00, 'https://cdn11.bigcommerce.com/s-3stx4pub31/products/6145/images/17495/sombrero-mexicano-con-borlas-adultos-1__53751.1654027564.386.513.jpg?c=2'),
-  (DEFAULT, 'Propeller hat', 'costume', 'A hat fit for the first grade', 15.00, 'https://i.ebayimg.com/images/g/EpsAAOSwmPpg-C1B/s-l1200.webp'),
-  (DEFAULT, 'Sports cap', 'costume', 'A cap for sports fans', 18.00, 'https://fanatics.frgimages.com/denver-broncos/mens-new-era-navy-denver-broncos-the-league-9forty-adjustable-hat_pi2485000_altimages_ff_2485399alt1_full.jpg?_hv=2&w=900'),
-  (DEFAULT, 'beanie', 'casual', 'A nice, warm, and comfortable hat', 12.00, 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/e86488f5-8d1a-4e0e-b64a-9b6b5b38f134/peak-standard-cuff-futura-beanie-44Jf5h.png'),
-  (DEFAULT, 'snow cap', 'casual', 'A warm hat for the winter', 15.00, 'https://assets.peterglenn.com/jpg/1000x1000/110798_65_HBLU_LG.jpg'),
-  (DEFAULT, 'straw hat', 'casual', 'A hat with a wide brim made of straw. Boater and Panama hats fall into this type.', 10.00, 'https://mobileimages.lowes.com/productimages/49047d7c-2993-4ad9-8def-54364e61b80e/08532487.jpg'),
-  (DEFAULT, 'bowler hat', 'dress', 'A British hard-felt hat', 20.00, 'https://i.etsystatic.com/9169083/r/il/4a2b94/4007201880/il_570xN.4007201880_6csd.jpg'),
-  (DEFAULT, 'conical hat', 'dress', 'An asian conically-shaped hat', 12.00, 'https://m.media-amazon.com/images/I/71cZ+BVntNL._AC_UY1000_.jpg'),
-  (DEFAULT, 'bucket hat', 'dress', 'A hat with a downwards brim', 15.00, 'https://media.revolutionrace.com/api/media/image/beafc5ff-ed37-40e5-b75a-40e867007303'),
-  (DEFAULT, 'flat cap', 'casual', 'A British rounded cap, also known as a paddy cap, a bunnet, and a Dai cap', 15.00, 'https://www.dubarry.com/media/image/e9/c5/e5/987803_1.jpg'),
-  (DEFAULT, 'fez', 'casual', 'An exotic flat-topped felt hat with a tassel', 18.00, 'https://m.media-amazon.com/images/I/71SvhW6HORL.jpg');
+  VALUES (DEFAULT, 'Fedora', 'DRESS', 'A classic fedora hat mlady', 15, 'https://upload.wikimedia.org/wikipedia/commons/9/93/A_fedora_hat%2C_made_by_Borsalino.jpg'),
+  (DEFAULT, 'Snapback', 'CASUAL', 'A flatbrim hat fit to you', 20, 'https://m.media-amazon.com/images/I/61It33zI5rL._AC_SX679_.jpg'),
+  (DEFAULT, 'Cowboy', 'COSTUME', 'A hat to conquer the wild west', 25, 'https://s7.orientaltrading.com/is/image/OrientalTrading/PDP_VIEWER_IMAGE/adults-brown-cowboy-hat-with-hatband~ur30030bn'),
+  (DEFAULT, 'Beret', 'DRESS', 'A french classic, very artistic', 20, 'https://i5.walmartimages.com/seo/TopHeadwear-100-Wool-Beret-Hat-Cap-Black_409d2b32-ed99-4152-a66c-aae12831b1c7_1.f4756059da30205d1012f811409c4eaa.jpeg?odnHeight=640&odnWidth=640&odnBg=FFFFFF'),
+  (DEFAULT, 'Sombrero', 'COSTUME', 'A hat for when you are feeling south of the border', 20, 'https://cdn11.bigcommerce.com/s-3stx4pub31/products/6145/images/17495/sombrero-mexicano-con-borlas-adultos-1__53751.1654027564.386.513.jpg?c=2'),
+  (DEFAULT, 'Propeller hat', 'COSTUME', 'A hat fit for the first grade', 15, 'https://i.ebayimg.com/images/g/EpsAAOSwmPpg-C1B/s-l1200.webp'),
+  (DEFAULT, 'Sports cap', 'COSTUME', 'A cap for sports fans', 18, 'https://fanatics.frgimages.com/denver-broncos/mens-new-era-navy-denver-broncos-the-league-9forty-adjustable-hat_pi2485000_altimages_ff_2485399alt1_full.jpg?_hv=2&w=900'),
+  (DEFAULT, 'beanie', 'CASUAL', 'A nice, warm, and comfortable hat', 12, 'https://static.nike.com/a/images/t_PDP_1728_v1/f_auto,q_auto:eco/e86488f5-8d1a-4e0e-b64a-9b6b5b38f134/peak-standard-cuff-futura-beanie-44Jf5h.png'),
+  (DEFAULT, 'snow cap', 'CASUAL', 'A warm hat for the winter', 15, 'https://assets.peterglenn.com/jpg/1000x1000/110798_65_HBLU_LG.jpg'),
+  (DEFAULT, 'straw hat', 'CASUAL', 'A hat with a wide brim made of straw. Boater and Panama hats fall into this type.', 10, 'https://mobileimages.lowes.com/productimages/49047d7c-2993-4ad9-8def-54364e61b80e/08532487.jpg'),
+  (DEFAULT, 'bowler hat', 'DRESS', 'A British hard-felt hat', 20, 'https://i.etsystatic.com/9169083/r/il/4a2b94/4007201880/il_570xN.4007201880_6csd.jpg'),
+  (DEFAULT, 'conical hat', 'DRESS', 'An asian conically-shaped hat', 12, 'https://m.media-amazon.com/images/I/71cZ+BVntNL._AC_UY1000_.jpg'),
+  (DEFAULT, 'bucket hat', 'DRESS', 'A hat with a downwards brim', 15, 'https://media.revolutionrace.com/api/media/image/beafc5ff-ed37-40e5-b75a-40e867007303'),
+  (DEFAULT, 'flat cap', 'CASUAL', 'A British rounded cap, also known as a paddy cap, a bunnet, and a Dai cap', 15, 'https://www.dubarry.com/media/image/e9/c5/e5/987803_1.jpg'),
+  (DEFAULT, 'fez', 'CASUAL', 'An exotic flat-topped felt hat with a tassel', 18, 'https://m.media-amazon.com/images/I/71SvhW6HORL.jpg');
