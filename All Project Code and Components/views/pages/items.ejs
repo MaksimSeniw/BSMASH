@@ -9,15 +9,14 @@ body {
   font-weight: 300;
   line-height: 1.42em;
   color:#0E1119;
-  background: #2BC0E4;  /* fallback for old browsers */
-background: -webkit-linear-gradient(to right, #EAECC6, #2BC0E4);  /* Chrome 10-25, Safari 5.1-6 */
-background: linear-gradient(to right, #EAECC6, #2BC0E4); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-
+  background: #FF512F;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #DD2476, #FF512F);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #DD2476, #FF512F); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 .container td {
-	  font-weight: normal;
-	  font-size: 1em;
+    font-weight: 550;
+	  font-size: 1.05em;
   -webkit-box-shadow: 0 2px 2px -2px #0E1119;
 	   -moz-box-shadow: 0 2px 2px -2px #0E1119;
 	        box-shadow: 0 2px 2px -2px #0E1119;
@@ -62,7 +61,7 @@ background: linear-gradient(to right, #EAECC6, #2BC0E4); /* W3C, IE 10+/ Edge, F
 }
 
 .container td:hover {
-  background-color: #464A52;
+  background-color: #464a5200;
   color: #0E1119;
   font-weight: bold;
   font-size: larger;
@@ -82,7 +81,7 @@ background: linear-gradient(to right, #EAECC6, #2BC0E4); /* W3C, IE 10+/ Edge, F
 
 </style>
         <main>
-                <table class="container" style="background-color:rgba(0, 0, 0, .03);">
+                <table class="container" style="background-color:rgba(0, 0, 0, 0);">
                     <thead>
                         <tr>
                             <th>Name</th>
@@ -117,6 +116,7 @@ background: linear-gradient(to right, #EAECC6, #2BC0E4); /* W3C, IE 10+/ Edge, F
                                     <input type = "number" id = "quantity" name = "quantity" min = "1" max = "50" value = "1"/>
                                     <br>
                                     <button type = "submit" class = "btn-primary">Add to Cart</button></td>    
+                                </td>    
                                 </form>
                             </tr>
                             <% }); %>
