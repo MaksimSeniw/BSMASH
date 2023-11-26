@@ -102,5 +102,9 @@ INSERT INTO items (item_id, item_name, item_type, item_description, item_price, 
   (DEFAULT, 'Coonskin Hat', 'Costume', 'A hat for mountain men', 20.00, 'https://www.heritagecostumes.com/images/products/6520.jpg'),
   (DEFAULT, 'Top Hat', 'Dress', 'A hat fit for Abraham Lincoln', 25.00, 'https://m.media-amazon.com/images/I/31At6NZK-8L._AC_.jpg'),
   (DEFAULT, 'Chefs Hat', 'Costume', 'Order up!', 15.00, 'https://m.media-amazon.com/images/I/512wWLhYo7L.jpg'),
-  (DEFAULT, 'Ushanka', 'Costume', 'A hat to survive a Russian Winter', 20.00, 'https://i.etsystatic.com/9014938/r/il/485e06/572427725/il_fullxfull.572427725_4p67.jpg');
+  (DEFAULT, 'Ushanka', 'Costume', 'A hat to survive a Russian Winter', 20.00, 'https://i.etsystatic.com/9014938/r/il/485e06/572427725/il_fullxfull.572427725_4p67.jpg'),
+  (DEFAULT, 'Straw Hat', 'casual', 'A hat with a wide brim made of straw. Boater and Panama hats fall into this type.', 10.00, 'https://mobileimages.lowes.com/productimages/49047d7c-2993-4ad9-8def-54364e61b80e/08532487.jpg'),
+  (DEFAULT, 'Conical Hat', 'dress', 'An asian conically-shaped hat', 12.00, 'https://m.media-amazon.com/images/I/71cZ+BVntNL._AC_UY1000_.jpg'),
+  (DEFAULT, 'Bucket Hat', 'dress', 'A hat with a downwards brim', 15.00, 'https://media.revolutionrace.com/api/media/image/beafc5ff-ed37-40e5-b75a-40e867007303'),
+  (DEFAULT, 'Flat cap', 'Casual', 'A British rounded cap, also known as a paddy cap, a bunnet, and a Dai cap', 15.00, 'https://www.dubarry.com/media/image/e9/c5/e5/987803_1.jpg');
 
