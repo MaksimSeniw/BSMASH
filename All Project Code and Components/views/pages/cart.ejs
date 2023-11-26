@@ -1,5 +1,6 @@
 <%- include ('../partials/head') %> 
-<%- include ('../partials/menu') %>
+<%- include ('../partials/loggedmenu') %>
+<%- include ('../partials/message') %>
 
         <main>
             <div class="container">
@@ -109,10 +110,6 @@
                     <input type = "text" id = "shipping_country" name = "shipping_country" placeholder = "Ex: USA"/>
                     <label for="shipping_zip" class="form-label">Shipping Zip</label>
                     <input type = "text" id = "shipping_zip" name = "shipping_zip" placeholder = "Ex: 12345"/>
-
-                    <label for="email" class="form-label">Email</label>
-                    <input type = "text" id = "email" name = "email" placeholder = "abc@gmail.com"/>
-
                     <button type = "submit" class = "btn-primary">Place Order</button>
                 </form>
             </div>
