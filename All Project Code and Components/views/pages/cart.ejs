@@ -1,3 +1,4 @@
+<!--Including partials-->
 <%- include ('../partials/head') %> 
 <%- include ('../partials/loggedmenu') %>
 <%- include ('../partials/message') %>
@@ -7,6 +8,7 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <!--Table headers-->
                             <th>Hat Name</th>
                             <th>Hat Type</th>
                             <th>Description</th>
@@ -16,6 +18,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!--populating the cart lines using ejs-->
                         <% cart_lines.forEach(function(cart_line){ %>
                             <tr>
                                 <th scope="row">
@@ -33,6 +36,7 @@
                                 <td>
                                     <%=cart_line.quantity%>
                                 </td>
+                                <!--delete from cart and save for later forms-->
                                 <td>
                                     <img src = "<%- cart_line.item_image_link%>" alt = "<%- cart_line.item_name%>" width = "200" height = "200">
                                 </td>
@@ -41,14 +45,12 @@
                                 <td>
                                     <button type = "submit" class = "btn-primary">Delete from Cart</button></td>    
                                 </form>
-                                <!-- NEW CHANGES START HERE -->
                                 <td>
                                     <form action="/cart/save-for-later" method="POST">
                                         <input type="hidden" name="item_id" value="<%- cart_line.item_id %>">
                                         <button type="submit" class="btn-primary">Save For Later</button>
                                     </form>
                                 </td>
-                                <!-- NEW CHANGES END HERE -->
                             </tr>
                             <% }); %>
                     </tbody>
@@ -61,6 +63,7 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <!--table headers-->
                             <th>Hat Name</th>
                             <th>Hat Type</th>
                             <th>Description</th>
@@ -71,6 +74,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!--populating saved for later using ejs-->
                         <% saved_for_later.forEach(function(item){ %>
                             <tr>
                                 <th scope="row"><%= item.item_name %></th>
@@ -79,6 +83,7 @@
                                 <td><%= item.item_price %></td>
                                 <td><%= item.quantity %></td>
                                 <td>
+                                    <!--foorms for moving to cart or deleting saved for later-->
                                     <form action="/cart/move-to-cart" method="POST">
                                         <input type="hidden" name="item_id" value="<%= item.item_id %>">
                                         <button type="submit" class="btn-primary">Move to Cart</button>
@@ -96,7 +101,7 @@
                     </tbody>
                 </table>
             </div>
-            <!-- NEW CHANGES END HERE FOR SAVED FOR LATER -->
+            <!-- if cart lines are greater than 0, display form for posting an order-->
         <% if(cart_lines.length > 0) { %>
             <div class = "container text-center">
                 <form action = "/orders/create" method = "POST">

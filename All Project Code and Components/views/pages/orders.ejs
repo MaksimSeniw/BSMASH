@@ -1,3 +1,4 @@
+<!--including partials-->
 <%- include ('../partials/head') %> 
 <%- include ('../partials/loggedmenu') %>
 <%- include ('../partials/message') %>
@@ -7,12 +8,14 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <!--table headers-->
                             <th>Order ID</th>
                             <th>Order Date</th>
                             <th>Order Total</th>
                         </tr>
                     </thead>
                     <tbody>
+                        <!--populating orders with ejs-->
                         <% orders.forEach(function(order){ %>
                             <tr>
                                 <th scope="row">
@@ -24,6 +27,7 @@
                                 <td>
                                     <p>$<%= order.order_total%></p>
                                 </td>
+                                <!--form to delete an order-->
                                 <form action = "/orders/delete" method = "POST">
                                 <input hidden name = "order_id" value = "<%=order.order_id%>">
                                 <td>

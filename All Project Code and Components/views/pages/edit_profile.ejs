@@ -1,6 +1,8 @@
+<!--including partials-->
 <%- include ('../partials/head') %>
 <%- include ('../partials/loggedmenu') %>
 
+<!--css styling-->
 <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
 <style>
   * {
@@ -70,7 +72,7 @@ background: linear-gradient(to right, #1D2671, #C33764); /* W3C, IE 10+/ Edge, F
 
 
     <div class="col"><%- include ('../partials/message') %></div>
-
+<!--form to edit profile-->
   <div class="register">
     <h1>Edit Profile</h1>
       <form action="/edit_profile" method="POST">

@@ -1,4 +1,5 @@
-/**/
+/*creating customers table with important personal info, their available funds, 
+and a foreign key to their cart*/
 CREATE TABLE customers(
   customer_id SERIAL PRIMARY KEY,
   first_name VARCHAR(1000),
@@ -11,10 +12,12 @@ CREATE TABLE customers(
   cart_id INT
 );
 
+/*creating the carts table*/
 CREATE TABLE carts(
   cart_id SERIAL PRIMARY KEY
 );
 
+/*creating the cart lines table that links carts to items and their quantity*/
 CREATE TABLE cart_lines( 
   line_id SERIAL PRIMARY KEY,
   cart_id INT,
@@ -22,6 +25,8 @@ CREATE TABLE cart_lines(
   quantity INT
 );
 
+/*creating the orders table that holds shipping info, the amount the order cost (to be deducted) 
+and the cart that the order was created from*/
 CREATE TABLE orders(
   order_id SERIAL PRIMARY KEY,
   order_date VARCHAR(1000),
@@ -34,6 +39,7 @@ CREATE TABLE orders(
   cart_id INT
 );
 
+/*creating the order lines table that links the order to the items in the order*/
 CREATE TABLE order_lines(
   line_id SERIAL PRIMARY KEY,
   order_id INT,
@@ -41,6 +47,7 @@ CREATE TABLE order_lines(
   quantity INT
 );
 
+/*creating the items table that stores important info about the hats on the site*/
 CREATE TABLE items(
   item_id SERIAL PRIMARY KEY,
   item_name VARCHAR(1000),
@@ -50,7 +57,7 @@ CREATE TABLE items(
   item_image_link VARCHAR(1000)
 );
 
--- NEW CHANGES START HERE
+/*creating the saved for later table that links customers to their saved items*/
 CREATE TABLE saved_for_later(
   saved_id SERIAL PRIMARY KEY,
   customer_id INT,
@@ -58,14 +65,13 @@ CREATE TABLE saved_for_later(
   quantity INT
 );
 
+/*adding foreign key restraints to all the tables that require it*/
 ALTER TABLE saved_for_later
 ADD CONSTRAINT customer_id FOREIGN KEY (customer_id) REFERENCES customers (customer_id);
 
 ALTER TABLE saved_for_later
 ADD CONSTRAINT item_id FOREIGN KEY (item_id) REFERENCES items (item_id);
 
-
--- NEW CHANGES END HERE
 
 ALTER TABLE customers
 ADD CONSTRAINT cart_id FOREIGN KEY (cart_id) REFERENCES carts (cart_id);
@@ -85,6 +91,7 @@ ADD CONSTRAINT order_id FOREIGN KEY (order_id) REFERENCES orders (order_id);
 ALTER TABLE order_lines
 ADD CONSTRAINT item_id FOREIGN KEY (item_id) REFERENCES items (item_id);
 
+/*Inserting all the hats our website will sell into the items table*/
 INSERT INTO items (item_id, item_name, item_type, item_description, item_price, item_image_link)
   VALUES (DEFAULT, 'Fedora', 'Dress', 'A classic fedora hat mlady', 15.00, 'https://upload.wikimedia.org/wikipedia/commons/9/93/A_fedora_hat%2C_made_by_Borsalino.jpg'),
   (DEFAULT, 'Snapback', 'Casual', 'A flatbrim hat fit to you', 20.00, 'https://m.media-amazon.com/images/I/61It33zI5rL._AC_SX679_.jpg'),

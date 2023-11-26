@@ -1,3 +1,4 @@
+<!--including partials-->
 <%- include ('../partials/head') %> 
 <%- include ('../partials/loggedmenu') %>
 <%- include ('../partials/message') %>
@@ -7,6 +8,7 @@
                 <table class="table">
                     <thead>
                         <tr>
+                            <!--table headers-->
                             <th>Hat Name</th>
                             <th>Hat Type</th>
                             <th>Description</th>
@@ -15,6 +17,7 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <!--populating items using ejs-->
                         <% items.forEach(function(item){ %>
                             <tr>
                                 <th scope="row">
@@ -29,6 +32,7 @@
                                 <td>
                                     <%=item.item_price%>
                                 </td>
+                                <!--form to add item to cart-->
                                 <td>
                                     <img src = "<%=item.item_image_link%>" alt = "<%= item.item_name%>" width = "200" height = "200">
                                 </td>
