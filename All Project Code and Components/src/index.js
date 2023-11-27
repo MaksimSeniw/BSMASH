@@ -439,10 +439,7 @@ app.post("/orders/create", async (req, res) => {
       });
   }
 
-  // const {name, email} = req.body;
-  //implement your spam protection or checks.
-  sendEmail();
-  // sendEmail(name, email);
+  sendEmail(req.session.user.username, req.session.user.email);
 
 });
 
@@ -571,13 +568,13 @@ app.post('/edit_profile', async (req, res) => {
 
 // Email Api
 
-async function sendEmail() {
+async function sendEmail(username, email) {
   const data = JSON.stringify({
     "Messages": [{
       "From": {"Email": "sadr1181@colorado.edu", "Name": "Saul"},
-      "To": [{"Email": "sauldrantch@gmail.com", "Name": "Saul"}],
-      "Subject": "test",
-      "TextPart": "hello"
+      "To": [{"Email": email, "Name": username}],
+      "Subject": "Hat Hub Purchase",
+      "TextPart": "Thank you for choosing Hat Hub. Your order was successfully placed and will arrive soon!"
     }]
   });
 
