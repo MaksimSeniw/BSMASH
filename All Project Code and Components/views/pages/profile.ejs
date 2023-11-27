@@ -1,3 +1,4 @@
+<!--including partials and styling-->
 <%- include ('../partials/head') %>
 <%- include ('../partials/loggedmenu') %>
   <script src="https://kit.fontawesome.com/5131b9749c.js" crossorigin="anonymous"></script>
@@ -98,6 +99,7 @@ hr .new1 {
 
 </style>
 <main>
+  <!--displaying profile with ejs-->
   <div class="col"><%- include ('../partials/message') %></div>
   <div class="container mt-4 mb-4 p-3 d-flex justify-content-center"> 
     <div class="card p-4"> 
@@ -110,34 +112,12 @@ hr .new1 {
             <div class="d-flex flex-row justify-content-center align-items-center mt-3"> 
               <span class="number"><%= funds_avail %> <span class="follow">Funds</span> </div> 
               <div class="text mt-3"> <span>Favorite Hat: <%= favorite_type %></span> </div>
-              <div class="text mt-3"> <span>Email: <%= email %></span> </div>        
+              <div class="text mt-3"> <span>Email: <%= email %></span> </div>
+              <!--form to edit profile-->        
               <div class=" d-flex mt-2"><a href="/edit_profile"><button class="btn1 btn-dark">Edit Profile</button></a> </div> 
 
 
 </div>
-  
-  
-  <!-- <div class="container">
-    <h1><centre>Welcome User : <%= username %></centre></h1>
-    <table>
-        <tr>
-          <th>First Name</th>
-          <td><%= first_name %></td>
-        </tr>
-        <tr>
-          <th>Last Name</th>
-          <td><%= last_name %></td>
-        </tr>
-        <tr>
-          <th>Funds Available</th>
-          <td><%= funds_avail %></td>
-        </tr>
-        <tr>
-          <th>Favorite Type</th>
-          <td><%= favorite_type %></td>
-        </tr>
-      </table>
-  </div> -->
 </main>
 
 <%- include ('../partials/footer') %>

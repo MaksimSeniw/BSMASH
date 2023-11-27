@@ -58,6 +58,7 @@ app.use(
   })
 );
 
+//user dictionary
 const user = {
   customer_id: undefined,
   first_name: undefined,
@@ -73,12 +74,12 @@ const user = {
 // <!-- Section 4 : API Routes -->
 // *****************************************************
 
-// TODO - Include your API routes here
-
+//test route for chai
 app.get('/welcometest', (req, res) => {
   res.json({ status: 'success', message: 'Welcome!' });
 });
 
+//redirecting empty route to login
 app.get('/', (req, res) => {
   res.redirect('/login');
 });
@@ -108,7 +109,7 @@ app.post('/register', async (req, res) => {
   const newCartResult = await db.one(newCartQuery);
   const newCartId = newCartResult.cart_id;
 
-  // To-DO: Insert username and hashed password into the 'users' table
+  //Insert username and hashed password into the 'users' table
   const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, email, cart_id) VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', '${req.body.email}', ${newCartId})  RETURNING *;`;
   if (req.body.username != "") {
     db.one(query)
@@ -171,6 +172,7 @@ app.post('/login', async (req, res) => {
       return res.redirect('/login?error=true&message=' + encodeURIComponent('Incorrect Username or Password'));
     }
   } catch (err) {
+    //handle login failure
     console.error('Error during login:', err);
     return res.redirect('/login?error=true&message=' + encodeURIComponent('An error occurred during login'));
   }
@@ -221,6 +223,7 @@ app.get("/items", (req, res) => {
 
   db.any(query)
     .then((data) => {
+      //if we get data from query, display on items page
       console.log("success");
       res.render("pages/items", {
         items: data,
@@ -229,6 +232,7 @@ app.get("/items", (req, res) => {
       });
     })
     .catch((err) => {
+      //if we fail, display empty page with error
       console.log(err);
       console.log("failure");
       res.render("pages/items", {
@@ -239,6 +243,7 @@ app.get("/items", (req, res) => {
     });
 });
 
+//adding to cart
 app.post("/cart/add", async (req, res) => {
   const item_id = parseInt(req.body.item_id);
   const cart_id = parseInt(req.session.user.cart_id);
@@ -258,11 +263,11 @@ app.post("/cart/add", async (req, res) => {
     const insertQuery = `INSERT INTO cart_lines (line_id, cart_id, item_id, quantity) VALUES (DEFAULT, ${cart_id}, ${item_id}, ${quantity});`;
     await db.none(insertQuery);
   }
-
+  //redirect to updated cart
   res.redirect(`/items?error=false&message=${encodeURIComponent("Successfully updated cart")}`);
 });
 
-
+//deleting from cart
 app.post("/cart/delete", (req, res) => {
   const item_id = parseInt(req.body.item_id);
   const cart_id = parseInt(req.session.user.cart_id);
@@ -270,45 +275,28 @@ app.post("/cart/delete", (req, res) => {
 
   db.one(query)
     .then((data) => {
+      //if successful, redirect to cart with success message
       res.redirect(`/cart?error=false&message=${encodeURIComponent("Successfully deleted from cart")}`);
     })
     .catch((err) => {
+      //if unsuccessful redirect to cart with failure message
       res.redirect(`/cart?error=true&message=${encodeURIComponent("Failed to delete from cart")}`);
     });
 });
 
-// app.get("/cart", (req, res) => {
-//   const query = `SELECT * FROM items INNER JOIN cart_lines ON items.item_id = cart_lines.item_id WHERE cart_id = ${req.session.user.cart_id}`;
-
-//   db.any(query)
-//     .then((data) => {
-//       res.render("pages/cart", {
-//         cart_lines: data,
-//         error: req.query.error,
-//         message: req.query.message,
-//       });
-//     })
-//     .catch((err) => {
-//       res.render("pages/cart", {
-//         cart_lines: [],
-//         error: req.query.error,
-//         message: req.query.message,
-//       });
-//     });
-// });
-// NEW CHANGES START HERE
-
-
+//getting the contents of cart
 app.get("/cart", async (req, res) => {
   try {
       const cartQuery = `SELECT * FROM items INNER JOIN cart_lines ON items.item_id = cart_lines.item_id WHERE cart_id = ${req.session.user.cart_id}`;
       const savedForLaterQuery = `SELECT * FROM items INNER JOIN saved_for_later ON items.item_id = saved_for_later.item_id WHERE customer_id = ${req.session.user.customer_id}`;
 
+      //querying for cart and saved for later contents
       const [cartData, savedForLaterData] = await Promise.all([
           db.any(cartQuery),
           db.any(savedForLaterQuery)
       ]);
 
+      //rendering cart page with cart and saved contents
       res.render("pages/cart", {
           cart_lines: cartData,
           saved_for_later: savedForLaterData, 
@@ -316,6 +304,7 @@ app.get("/cart", async (req, res) => {
           message: req.query.message,
       });
   } catch (error) {
+    //handling error for fetching cart by displaying empty page
       console.error("Error fetching data for cart:", error);
       res.render("pages/cart", {
           cart_lines: [],
@@ -326,85 +315,90 @@ app.get("/cart", async (req, res) => {
   }
 });
 
-
-
-
-
+//moving to cart from saved later
 app.post("/cart/move-to-cart", async (req, res) => {
   const item_id = parseInt(req.body.item_id);
   const customer_id = req.session.user.customer_id;
 
   try {
-      
+      //deleting saved for later items
       const removeFromSavedQuery = `DELETE FROM saved_for_later WHERE customer_id = ${customer_id} AND item_id = ${item_id};`;
       await db.none(removeFromSavedQuery);
 
-     
+      //inserting into the customer cart
       const addToCartQuery = `INSERT INTO cart_lines (cart_id, item_id, quantity) VALUES (${req.session.user.cart_id}, ${item_id}, 1) RETURNING *;`;
       await db.one(addToCartQuery);
 
+      //redirecting to cart
       res.redirect("/cart");
   } catch (error) {
+      //error handling moving into cart
       console.error("Error moving item to cart:", error);
       res.redirect("/cart?error=true&message=Failed to move item to cart");
   }
 });
 
-
+//deleting an item from saved later
 app.post("/cart/delete-saved-item", async (req, res) => {
   const item_id = parseInt(req.body.item_id);
   const customer_id = req.session.user.customer_id;
 
   try {
      
+    //deleting the saved item
       const deleteFromSavedQuery = `DELETE FROM saved_for_later WHERE customer_id = ${customer_id} AND item_id = ${item_id};`;
       await db.none(deleteFromSavedQuery);
 
+      //redirecting to cart
       res.redirect("/cart");
   } catch (error) {
+      //handlign error where unable to delete from saved for later
       console.error("Error deleting item from Saved For Later:", error);
       res.redirect("/cart?error=true&message=Failed to delete item from Saved For Later");
   }
 });
 
-
+//saving an item for later
 app.post("/cart/save-for-later", async (req, res) => {
   const item_id = parseInt(req.body.item_id);
   const customer_id = req.session.user.customer_id;
 
   try {
       
+    //removing item from cart
       const removeFromCartQuery = `DELETE FROM cart_lines WHERE cart_id = ${req.session.user.cart_id} AND item_id = ${item_id};`;
       await db.none(removeFromCartQuery);
 
-
+      //adding to saved later
       const addToSavedQuery = `INSERT INTO saved_for_later (customer_id, item_id, quantity) VALUES (${customer_id}, ${item_id}, 1) RETURNING *;`;
       await db.one(addToSavedQuery);
 
+      //redirecting to cart
       res.redirect("/cart");
   } catch (error) {
+    //error handling
       console.error("Error saving item for later:", error);
       res.redirect("/cart?error=true&message=Failed to save item for later");
   }
 });
 
-
-
-
-
-// NEW CHANGES END HERE
+//creating order
 app.post("/orders/create", async (req, res) => {
 
+  //calculating item cost to deduct from user amount
   const itemCostQuery = `SELECT items.item_price, cart_lines.quantity FROM items JOIN cart_lines ON cart_lines.item_id = items.item_id
   WHERE cart_lines.cart_id = ${req.session.user.cart_id};`
 
   const itemCosts = await db.any(itemCostQuery);
   var orderTotal = 0;
+
+  //fail to create order if insufficient funds
   itemCosts.forEach((item) => orderTotal += (item.item_price * item.quantity));
   if (req.session.user.funds_avail - orderTotal < 0) {
     res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order - Insufficient funds")}`);
   }
   else {
+    //else create order with current date and shipping info
     const currentDate = new Date().toDateString();
     const parsedZip = parseInt(req.body.shipping_zip);
     const createOrderQuery = `INSERT INTO orders (order_id, order_date, shipping_address, shipping_city, shipping_state, shipping_country, shipping_zip, order_total, cart_id) VALUES (DEFAULT, '${currentDate}', '${req.body.shipping_address}', '${req.body.shipping_city}', '${req.body.shipping_state}', '${req.body.shipping_country}', ${parsedZip}, ${orderTotal}, ${req.session.user.cart_id}) RETURNING *;`;
@@ -413,28 +407,33 @@ app.post("/orders/create", async (req, res) => {
     await db.any(createOrderQuery)
       .then((data) => {
         newOrderId = data[0].order_id;
-        //res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully created order")}`);
       })
       .catch((err) => {
+        //error handling
         res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
       });
-
+    
+      //create the order lines linking items to order
     const itemsQuery = `INSERT INTO order_lines (order_id, item_id, quantity) SELECT ${newOrderId}, item_id, quantity FROM cart_lines WHERE cart_id = ${req.session.user.cart_id};`;
     await db.any(itemsQuery)
       .then((data) => {
         console.log("added order lines");
       })
       .catch((err) => {
+        //error handling
         res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
       });
 
+      //deleting from the cart after adding to order
     const deleteQuery = `DELETE FROM cart_lines WHERE cart_id = ${req.session.user.cart_id};`;
     await db.any(deleteQuery)
       .then((data) => {
+        //subtract from user total
         req.session.user.funds_avail -= orderTotal;
         res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully created order")}`);
       })
       .catch((err) => {
+        //error handling
         res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
       });
   }
@@ -443,26 +442,31 @@ app.post("/orders/create", async (req, res) => {
 
 });
 
+//delete an order
 app.post("/orders/delete", async (req, res) => {
   const linesQuery = `DELETE FROM order_lines WHERE order_id = ${req.body.order_id};`;
   const orderQuery = `DELETE FROM orders WHERE order_id = ${req.body.order_id};`;
 
   await db.any(linesQuery);
 
+  //querying to remove order
   db.any(orderQuery)
     .then((data) => {
       res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully removed order")}`);
     })
     .catch((err) => {
+      //error handling
       res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to remove order")}`);
     });
 });
 
+//getting orders
 app.get("/orders", (req, res) => {
   const query = `SELECT * FROM orders WHERE cart_id = ${req.session.user.cart_id};`;
 
   db.any(query)
     .then((data) => {
+      //rendering orders page with data
       res.render("pages/orders", {
         orders: data,
         error: req.query.error,
@@ -470,6 +474,7 @@ app.get("/orders", (req, res) => {
       });
     })
     .catch((err) => {
+      //error handling
       res.render("pages/orders", {
         orders: [],
         error: req.query.error,
@@ -487,6 +492,7 @@ app.get('/edit_profile', (req, res) => {
     message: req.query.message,
   })
 });
+
 //posting edited profile
 app.post('/edit_profile', async (req, res) => {
 
@@ -498,6 +504,7 @@ app.post('/edit_profile', async (req, res) => {
   var funds_avail = 0.0;
   var password = "";
 
+  //checking which fields are empty when updating
   if (req.body.first_name != "") {
     first_name = req.body.first_name;
   }
@@ -548,19 +555,19 @@ app.post('/edit_profile', async (req, res) => {
     password = passQuery.password;
   }
 
-
+  //querying database
   const query = `UPDATE customers 
     SET first_name = '${first_name}', last_name = '${last_name}', username = '${username}', favorite_type = '${favorite_type}', email = '${email}', funds_avail = ${funds_avail}, password = '${password}'
     WHERE customer_id = '${req.session.user.customer_id}'
     RETURNING *;`;
 
-  console.log(req.session.user.customer_id);
-
   db.one(query)
     .then((data) => {
+      //updating profile
       res.redirect(`/logout?error=false&message=${encodeURIComponent("Successfully update profile. Please login again.")}`);
     })
     .catch((err) => {
+      //failing to update profile
       res.redirect(`/profile?error=true&message=${encodeURIComponent("Failed to update profile information")}`);
       return console.log(err);
     }); 
@@ -600,6 +607,7 @@ async function sendEmail(username, email) {
 // *****************************************************
 // <!-- Section 5 : Start Server-->
 // *****************************************************
+
 // starting the server and keeping the connection open to listen for more requests
 module.exports = app.listen(3000);
 console.log('Server is listening on port 3000');

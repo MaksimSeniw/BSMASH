@@ -1,3 +1,4 @@
+<!--including partials-->
 <%- include ('../partials/head') %> 
 <%- include ('../partials/loggedmenu') %>
 <%- include ('../partials/message') %>
@@ -130,6 +131,7 @@ background: linear-gradient(to right, #DD2476, #FF512F); /* W3C, IE 10+/ Edge, F
                 <table class="table">
                     <thead>
                         <tr>
+                            <!--table headers-->
                             <th>Hat Name</th>
                             <th>Hat Type</th>
                             <th>Description</th>
@@ -138,6 +140,7 @@ background: linear-gradient(to right, #DD2476, #FF512F); /* W3C, IE 10+/ Edge, F
                         </tr>
                     </thead>
                     <tbody>
+                        <!--populating items using ejs-->
                         <% items.forEach(function(item){ %>
                             <tr>
                                 <th scope="row">
@@ -152,6 +155,7 @@ background: linear-gradient(to right, #DD2476, #FF512F); /* W3C, IE 10+/ Edge, F
                                 <td>
                                     <%=item.item_price%>
                                 </td>
+                                <!--form to add item to cart-->
                                 <td>
                                     <img src = "<%=item.item_image_link%>" alt = "<%= item.item_name%>" width = "200" height = "200">
                                 </td>
