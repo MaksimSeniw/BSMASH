@@ -556,7 +556,7 @@ app.post('/edit_profile', async (req, res) => {
     .catch((err) => {
       res.redirect(`/profile?error=true&message=${encodeURIComponent("Failed to update profile information")}`);
       return console.log(err);
-    });
+    }); 
 });
 
 // *****************************************************
