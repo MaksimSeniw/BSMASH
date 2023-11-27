@@ -21,3 +21,22 @@ Unit Testing:
 - login failure redirects to register (negative)
 - register success redirects to profile (positive)
 - register fail sends error message (negative)
+
+11/27: 
+
+What we have done:
+-Finished functionality for all of our pages
+-resolved our unit testing errors
+-finsihed our UAT document
+-added more hats to our database
+-added documentation and comments to our code
+-added UI improvements
+
+What we are planning for this week:
+-Finishing our UI improvements (consistency among all pages)
+-Adding more security checks for our collaboration with CSCI 3403
+-Finishing our presentation
+-Update documentation as we deploy our application
+
+What challenges we are facing:
+-Criteria for final presentations, and project report
