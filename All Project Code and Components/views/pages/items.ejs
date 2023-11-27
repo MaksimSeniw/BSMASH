@@ -124,52 +124,6 @@ background: linear-gradient(to right, #DD2476, #FF512F); /* W3C, IE 10+/ Edge, F
                             <% }); %>
                     </tbody>
                 </table>
-            
-            
-            
-            <!-- <div class="container">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <!--table headers-->
-                            <th>Hat Name</th>
-                            <th>Hat Type</th>
-                            <th>Description</th>
-                            <th>Price</th>
-                            <th>Preview</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <!--populating items using ejs-->
-                        <% items.forEach(function(item){ %>
-                            <tr>
-                                <th scope="row">
-                                    <%= item.item_name%>
-                                </th>
-                                <td>
-                                    <%=item.item_type%>
-                                </td>
-                                <td>
-                                    <%=item.item_description%>
-                                </td>
-                                <td>
-                                    <%=item.item_price%>
-                                </td>
-                                <!--form to add item to cart-->
-                                <td>
-                                    <img src = "<%=item.item_image_link%>" alt = "<%= item.item_name%>" width = "200" height = "200">
-                                </td>
-                                <form action = "/cart/add" method = "POST">
-                                <input hidden name = "item_id" value = "<%- item.item_id%>">
-                                <td>
-                                    <input type = "number" id = "quantity" name = "quantity" min = "1" max = "50" value = "1"/>
-                                    <button type = "submit" class = "btn-primary">Add to Cart</button></td>    
-                                </form>
-                            </tr>
-                            <% }); %>
-                    </tbody>
-                </table>
-            </div> -->
         </main>
 
         <%- include ('../partials/footer') %>

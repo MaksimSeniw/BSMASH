@@ -55,7 +55,7 @@ describe('Server!', () => {
 
 
   //We are checking POST /login API by passing the user info in the correct order. This test case should pass and redirect to the items page
-  //Positive cases
+  //Positive case
   it('positive : /login', done => {
     chai
       .request(server)
@@ -70,7 +70,7 @@ describe('Server!', () => {
   });
 
   //We are checking POST /login API by passing the user info incorrectly. This test case should pass and redirect to the login with an incorrect username or password message
-  //Positive cases
+  //negative case
   it('negative : /login', done => {
     chai
       .request(server)
@@ -84,7 +84,4 @@ describe('Server!', () => {
       });
   });
   
-
-  // ===========================================================================
-  // TO-DO: Part A Login unit test case
 });
