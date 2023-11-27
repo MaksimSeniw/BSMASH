@@ -7,11 +7,17 @@ The goal of HatHub is to allow a user to set up a profile where they can buy man
 
 ## Contributors
 Saul Drantch
+
 Streck Salmon
+
 Maks Seniw
+
 Abdullah Yassine
+
 Hyder Baig
+
 Blake Raphael
+
 
 ## Technology Stack
 - Node.js
@@ -26,6 +32,7 @@ Blake Raphael
 
 ## Prerequisites
 Minimum specifications: Chrome 10-25, Safari 5.1-6
+
 Preferred specifcations: W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+
 
 ## Testing
