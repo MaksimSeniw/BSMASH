@@ -129,6 +129,10 @@ app.post('/register', async (req, res) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.redirect("pages/login");
+});
+
 // get login
 app.get('/login', (req, res) => {
   res.render("pages/login", {
@@ -434,6 +438,12 @@ app.post("/orders/create", async (req, res) => {
         res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
       });
   }
+
+  // const {name, email} = req.body;
+  //implement your spam protection or checks.
+  sendEmail();
+  // sendEmail(name, email);
+
 });
 
 app.post("/orders/delete", async (req, res) => {
@@ -558,6 +568,37 @@ app.post('/edit_profile', async (req, res) => {
       return console.log(err);
     }); 
 });
+
+// Email Api
+
+async function sendEmail() {
+  const data = JSON.stringify({
+    "Messages": [{
+      "From": {"Email": "sadr1181@colorado.edu", "Name": "Saul"},
+      "To": [{"Email": "sauldrantch@gmail.com", "Name": "Saul"}],
+      "Subject": "test",
+      "TextPart": "hello"
+    }]
+  });
+
+  const config = {
+    method: 'post',
+    url: 'https://api.mailjet.com/v3.1/send',
+    data: data,
+    headers: {'Content-Type': 'application/json'},
+    auth: {username: 'ca8b49fd4eba3dc0c6c9e14f2451acf1', password: 'a1f1f3d498a0d2c23a09f87fe75c8197'},
+  };
+
+  return axios(config)
+    .then(function (response) {
+      console.log(JSON.stringify(response.data));
+    })
+    .catch(function (error) {
+      console.log(error);
+    });
+
+}
+
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->
