@@ -31,9 +31,9 @@ Blake Raphael
 - (Deployment platform (TBD))
 
 ## Prerequisites
-Minimum specifications: Chrome 10-25, Safari 5.1-6
+Minimum specifications: Chrome 10-25, Safari 5.1-6, Docker 4.22.1+
 
-Preferred specifcations: W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+
+Preferred specifcations: W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+, Docker 4.25.2+
 
 ## Testing
 When testing, you must use a brand-new docker volume so that the test user can be added and the register route can be tested correctly. If you want to re-use a volume without destroying it, remove the `module.exports =` portion of the `module.exports = app.listen(3000);` line in `index.js`. This will allow you to run the app, but all the tests will fail.
