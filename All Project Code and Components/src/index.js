@@ -110,9 +110,10 @@ app.post('/register', async (req, res) => {
   const newCartId = newCartResult.cart_id;
 
   //Insert username and hashed password into the 'users' table
-  const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, email, cart_id) VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', '${req.body.email}', ${newCartId})  RETURNING *;`;
+  const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, email, cart_id) VALUES (DEFAULT, $1, $2, $3, $4, 100.00, $5, $6, $7)  RETURNING *;`;
+  const values = [req.body.first_name, req.body.last_name, req.body.username, hash, req.body.favorite_type, req.body.email, newCartId];
   if (req.body.username != "") {
-    db.one(query)
+    db.one(query, values)
       .then((data) => {
         res.redirect('/login');
       })
@@ -145,13 +146,12 @@ app.get('/login', (req, res) => {
 // post login
 app.post('/login', async (req, res) => {
   const username = req.body.username;
-  const password = req.body.password;
-  const query = `SELECT * FROM customers WHERE username = $1`;
+  const query = `SELECT * FROM customers WHERE username = $1;`;
 
   try {
     const user = await db.oneOrNone(query, [username]);
 
-    if (user && await bcrypt.compare(password, user.password)) {
+    if (user && await bcrypt.compare(req.body.password, user.password)) {
       // Set user session and redirect to items page
       req.session.user = {
         customer_id: user.customer_id,
@@ -249,31 +249,40 @@ app.post("/cart/add", async (req, res) => {
   const cart_id = parseInt(req.session.user.cart_id);
   const quantity = parseInt(req.body.quantity);
 
-  // Check if the item already exists in the cart
-  const checkQuery = `SELECT * FROM cart_lines WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
-  const existingItem = await db.oneOrNone(checkQuery);
+  if (quantity > 0) {
+    // Check if the item already exists in the cart
+    const checkQuery = `SELECT * FROM cart_lines WHERE cart_id = $1 AND item_id = $2;`;
+    const checkValues = [cart_id, item_id];
+    const existingItem = await db.oneOrNone(checkQuery, checkValues);
 
-  if (existingItem) {
-    // Update the quantity of the existing item
-    const newQuantity = existingItem.quantity + quantity;
-    const updateQuery = `UPDATE cart_lines SET quantity = ${newQuantity} WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
-    await db.none(updateQuery);
-  } else {
-    // Insert the new item
-    const insertQuery = `INSERT INTO cart_lines (line_id, cart_id, item_id, quantity) VALUES (DEFAULT, ${cart_id}, ${item_id}, ${quantity});`;
-    await db.none(insertQuery);
+    if (existingItem) {
+      // Update the quantity of the existing item
+      const newQuantity = existingItem.quantity + quantity;
+      const updateValues = [newQuantity, cart_id, item_id];
+      const updateQuery = `UPDATE cart_lines SET quantity = $1 WHERE cart_id = $2 AND item_id = $3;`;
+      await db.none(updateQuery, updateValues);
+    } else {
+      // Insert the new item
+      const insertValues = [cart_id, item_id, quantity];
+      const insertQuery = `INSERT INTO cart_lines (line_id, cart_id, item_id, quantity) VALUES (DEFAULT, $1, $2, $3);`;
+      await db.none(insertQuery, insertValues);
+    }
+    //redirect to updated cart
+    res.redirect(`/items?error=false&message=${encodeURIComponent("Successfully updated cart")}`);
   }
-  //redirect to updated cart
-  res.redirect(`/items?error=false&message=${encodeURIComponent("Successfully updated cart")}`);
+  else {
+    res.redirect(`/items?error=false&message=${encodeURIComponent("Failed to update cart")}`)
+  }
 });
 
 //deleting from cart
 app.post("/cart/delete", (req, res) => {
   const item_id = parseInt(req.body.item_id);
   const cart_id = parseInt(req.session.user.cart_id);
-  const query = `DELETE FROM cart_lines WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
+  const values = [cart_id, item_id];
+  const query = `DELETE FROM cart_lines WHERE cart_id = $1 AND item_id = $2;`;
 
-  db.one(query)
+  db.one(query, values)
     .then((data) => {
       //if successful, redirect to cart with success message
       res.redirect(`/cart?error=false&message=${encodeURIComponent("Successfully deleted from cart")}`);
@@ -287,31 +296,33 @@ app.post("/cart/delete", (req, res) => {
 //getting the contents of cart
 app.get("/cart", async (req, res) => {
   try {
-      const cartQuery = `SELECT * FROM items INNER JOIN cart_lines ON items.item_id = cart_lines.item_id WHERE cart_id = ${req.session.user.cart_id}`;
-      const savedForLaterQuery = `SELECT * FROM items INNER JOIN saved_for_later ON items.item_id = saved_for_later.item_id WHERE customer_id = ${req.session.user.customer_id}`;
+    const cartValues = [req.session.user.cart_id];
+    const savedValues = [req.session.user.customer_id];
+    const cartQuery = `SELECT * FROM items INNER JOIN cart_lines ON items.item_id = cart_lines.item_id WHERE cart_id = $1`;
+    const savedForLaterQuery = `SELECT * FROM items INNER JOIN saved_for_later ON items.item_id = saved_for_later.item_id WHERE customer_id = $1`;
 
-      //querying for cart and saved for later contents
-      const [cartData, savedForLaterData] = await Promise.all([
-          db.any(cartQuery),
-          db.any(savedForLaterQuery)
-      ]);
+    //querying for cart and saved for later contents
+    const [cartData, savedForLaterData] = await Promise.all([
+      db.any(cartQuery, cartValues),
+      db.any(savedForLaterQuery, savedValues)
+    ]);
 
-      //rendering cart page with cart and saved contents
-      res.render("pages/cart", {
-          cart_lines: cartData,
-          saved_for_later: savedForLaterData, 
-          error: req.query.error,
-          message: req.query.message,
-      });
+    //rendering cart page with cart and saved contents
+    res.render("pages/cart", {
+      cart_lines: cartData,
+      saved_for_later: savedForLaterData,
+      error: req.query.error,
+      message: req.query.message,
+    });
   } catch (error) {
     //handling error for fetching cart by displaying empty page
-      console.error("Error fetching data for cart:", error);
-      res.render("pages/cart", {
-          cart_lines: [],
-          saved_for_later: [], 
-          error: req.query.error,
-          message: req.query.message,
-      });
+    console.error("Error fetching data for cart:", error);
+    res.render("pages/cart", {
+      cart_lines: [],
+      saved_for_later: [],
+      error: req.query.error,
+      message: req.query.message,
+    });
   }
 });
 
@@ -321,20 +332,22 @@ app.post("/cart/move-to-cart", async (req, res) => {
   const customer_id = req.session.user.customer_id;
 
   try {
-      //deleting saved for later items
-      const removeFromSavedQuery = `DELETE FROM saved_for_later WHERE customer_id = ${customer_id} AND item_id = ${item_id};`;
-      await db.none(removeFromSavedQuery);
+    //deleting saved for later items
+    const removeValues = [customer_id, item_id];
+    const removeFromSavedQuery = `DELETE FROM saved_for_later WHERE customer_id = $1 AND item_id = $2;`;
+    await db.none(removeFromSavedQuery, removeValues);
 
-      //inserting into the customer cart
-      const addToCartQuery = `INSERT INTO cart_lines (cart_id, item_id, quantity) VALUES (${req.session.user.cart_id}, ${item_id}, 1) RETURNING *;`;
-      await db.one(addToCartQuery);
+    //inserting into the customer cart
+    const addValues = [req.session.user.cart_id, item_id];
+    const addToCartQuery = `INSERT INTO cart_lines (cart_id, item_id, quantity) VALUES ($1, $2, 1) RETURNING *;`;
+    await db.one(addToCartQuery, addValues);
 
-      //redirecting to cart
-      res.redirect("/cart");
+    //redirecting to cart
+    res.redirect("/cart");
   } catch (error) {
-      //error handling moving into cart
-      console.error("Error moving item to cart:", error);
-      res.redirect("/cart?error=true&message=Failed to move item to cart");
+    //error handling moving into cart
+    console.error("Error moving item to cart:", error);
+    res.redirect("/cart?error=true&message=Failed to move item to cart");
   }
 });
 
@@ -344,17 +357,18 @@ app.post("/cart/delete-saved-item", async (req, res) => {
   const customer_id = req.session.user.customer_id;
 
   try {
-     
-    //deleting the saved item
-      const deleteFromSavedQuery = `DELETE FROM saved_for_later WHERE customer_id = ${customer_id} AND item_id = ${item_id};`;
-      await db.none(deleteFromSavedQuery);
 
-      //redirecting to cart
-      res.redirect("/cart");
+    //deleting the saved item
+    const deleteValues = [customer_id, item_id];
+    const deleteFromSavedQuery = `DELETE FROM saved_for_later WHERE customer_id = $1 AND item_id = $2;`;
+    await db.none(deleteFromSavedQuery, deleteValues);
+
+    //redirecting to cart
+    res.redirect("/cart");
   } catch (error) {
-      //handlign error where unable to delete from saved for later
-      console.error("Error deleting item from Saved For Later:", error);
-      res.redirect("/cart?error=true&message=Failed to delete item from Saved For Later");
+    //handlign error where unable to delete from saved for later
+    console.error("Error deleting item from Saved For Later:", error);
+    res.redirect("/cart?error=true&message=Failed to delete item from Saved For Later");
   }
 });
 
@@ -364,21 +378,23 @@ app.post("/cart/save-for-later", async (req, res) => {
   const customer_id = req.session.user.customer_id;
 
   try {
-      
+
     //removing item from cart
-      const removeFromCartQuery = `DELETE FROM cart_lines WHERE cart_id = ${req.session.user.cart_id} AND item_id = ${item_id};`;
-      await db.none(removeFromCartQuery);
+    const cartRemValues = [req.session.user.cart_id, item_id];
+    const removeFromCartQuery = `DELETE FROM cart_lines WHERE cart_id = $1 AND item_id = $2;`;
+    await db.none(removeFromCartQuery, cartRemValues);
 
-      //adding to saved later
-      const addToSavedQuery = `INSERT INTO saved_for_later (customer_id, item_id, quantity) VALUES (${customer_id}, ${item_id}, 1) RETURNING *;`;
-      await db.one(addToSavedQuery);
+    //adding to saved later
+    const savedForValues = [customer_id, item_id];
+    const addToSavedQuery = `INSERT INTO saved_for_later (customer_id, item_id, quantity) VALUES ($1, $2, 1) RETURNING *;`;
+    await db.one(addToSavedQuery, savedForValues);
 
-      //redirecting to cart
-      res.redirect("/cart");
+    //redirecting to cart
+    res.redirect("/cart");
   } catch (error) {
     //error handling
-      console.error("Error saving item for later:", error);
-      res.redirect("/cart?error=true&message=Failed to save item for later");
+    console.error("Error saving item for later:", error);
+    res.redirect("/cart?error=true&message=Failed to save item for later");
   }
 });
 
@@ -386,10 +402,11 @@ app.post("/cart/save-for-later", async (req, res) => {
 app.post("/orders/create", async (req, res) => {
 
   //calculating item cost to deduct from user amount
+  const costValues = [req.session.user.cart_id];
   const itemCostQuery = `SELECT items.item_price, cart_lines.quantity FROM items JOIN cart_lines ON cart_lines.item_id = items.item_id
-  WHERE cart_lines.cart_id = ${req.session.user.cart_id};`
+  WHERE cart_lines.cart_id = $1;`
 
-  const itemCosts = await db.any(itemCostQuery);
+  const itemCosts = await db.any(itemCostQuery, costValues);
   var orderTotal = 0;
 
   //fail to create order if insufficient funds
@@ -401,10 +418,11 @@ app.post("/orders/create", async (req, res) => {
     //else create order with current date and shipping info
     const currentDate = new Date().toDateString();
     const parsedZip = parseInt(req.body.shipping_zip);
-    const createOrderQuery = `INSERT INTO orders (order_id, order_date, shipping_address, shipping_city, shipping_state, shipping_country, shipping_zip, order_total, cart_id) VALUES (DEFAULT, '${currentDate}', '${req.body.shipping_address}', '${req.body.shipping_city}', '${req.body.shipping_state}', '${req.body.shipping_country}', ${parsedZip}, ${orderTotal}, ${req.session.user.cart_id}) RETURNING *;`;
+    const orderValues = [currentDate, req.body.shipping_address, req.body.shipping_city, req.body.shipping_state, req.body.shipping_country, parsedZip, orderTotal, req.session.user.cart_id];
+    const createOrderQuery = `INSERT INTO orders (order_id, order_date, shipping_address, shipping_city, shipping_state, shipping_country, shipping_zip, order_total, cart_id) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;`;
 
     var newOrderId = 0;
-    await db.any(createOrderQuery)
+    await db.any(createOrderQuery, orderValues)
       .then((data) => {
         newOrderId = data[0].order_id;
       })
@@ -412,10 +430,11 @@ app.post("/orders/create", async (req, res) => {
         //error handling
         res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
       });
-    
-      //create the order lines linking items to order
-    const itemsQuery = `INSERT INTO order_lines (order_id, item_id, quantity) SELECT ${newOrderId}, item_id, quantity FROM cart_lines WHERE cart_id = ${req.session.user.cart_id};`;
-    await db.any(itemsQuery)
+
+    //create the order lines linking items to order
+    const orderLineValues = [newOrderId, req.session.user.cart_id];
+    const itemsQuery = `INSERT INTO order_lines (order_id, item_id, quantity) SELECT $1, item_id, quantity FROM cart_lines WHERE cart_id = $2;`;
+    await db.any(itemsQuery, orderLineValues)
       .then((data) => {
         console.log("added order lines");
       })
@@ -424,9 +443,10 @@ app.post("/orders/create", async (req, res) => {
         res.redirect(`/orders?error=true&message=${encodeURIComponent("Failed to create order")}`);
       });
 
-      //deleting from the cart after adding to order
-    const deleteQuery = `DELETE FROM cart_lines WHERE cart_id = ${req.session.user.cart_id};`;
-    await db.any(deleteQuery)
+    //deleting from the cart after adding to order
+    const deleteCartValues = [req.session.user.cart_id];
+    const deleteQuery = `DELETE FROM cart_lines WHERE cart_id = $1;`;
+    await db.any(deleteQuery, deleteCartValues)
       .then((data) => {
         //subtract from user total
         req.session.user.funds_avail -= orderTotal;
@@ -444,13 +464,15 @@ app.post("/orders/create", async (req, res) => {
 
 //delete an order
 app.post("/orders/delete", async (req, res) => {
-  const linesQuery = `DELETE FROM order_lines WHERE order_id = ${req.body.order_id};`;
-  const orderQuery = `DELETE FROM orders WHERE order_id = ${req.body.order_id};`;
+  const orderValues = [req.body.order_id];
+  const linesQuery = `DELETE FROM order_lines WHERE order_id = $1;`;
+  const orderQuery = `DELETE FROM orders WHERE order_id = $1;`;
 
-  await db.any(linesQuery);
+  //remove order lines first
+  await db.any(linesQuery, orderValues);
 
   //querying to remove order
-  db.any(orderQuery)
+  db.any(orderQuery, orderValues)
     .then((data) => {
       res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully removed order")}`);
     })
@@ -462,9 +484,10 @@ app.post("/orders/delete", async (req, res) => {
 
 //getting orders
 app.get("/orders", (req, res) => {
-  const query = `SELECT * FROM orders WHERE cart_id = ${req.session.user.cart_id};`;
+  const values = [req.session.user.cart_id];
+  const query = `SELECT * FROM orders WHERE cart_id = $1;`;
 
-  db.any(query)
+  db.any(query, values)
     .then((data) => {
       //rendering orders page with data
       res.render("pages/orders", {
@@ -537,13 +560,10 @@ app.post('/edit_profile', async (req, res) => {
     email = req.session.user.email;
   }
 
-  if(req.body.funds_avail != ""){
+  if (req.body.funds_avail != "" && parseFloat(req.body.funds_avail) >= 0.00) {
     funds_avail = parseFloat(req.session.user.funds_avail) + parseFloat(req.body.funds_avail);
-    console.log(parseFloat(req.body.funds_avail));
-    console.log(req.session.user.funds_avail);
-    console.log(parseFloat(req.session.user.funds_avail) + parseFloat(req.body.funds_avail));
   }
-  else{
+  else {
     funds_avail = req.session.user.funds_avail;
   }
 
@@ -551,17 +571,18 @@ app.post('/edit_profile', async (req, res) => {
     password = await bcrypt.hash(req.body.password, 10);
   }
   else {
-    const passQuery = await db.one(`SELECT password FROM customers WHERE username = '${req.session.user.username}';`);
+    const passQuery = await db.one(`SELECT password FROM customers WHERE username = $1;`, [req.session.user.username]);
     password = passQuery.password;
   }
 
   //querying database
+  const values = [first_name, last_name, username, favorite_type, email, funds_avail, password, req.session.user.customer_id];
   const query = `UPDATE customers 
-    SET first_name = '${first_name}', last_name = '${last_name}', username = '${username}', favorite_type = '${favorite_type}', email = '${email}', funds_avail = ${funds_avail}, password = '${password}'
-    WHERE customer_id = '${req.session.user.customer_id}'
+    SET first_name = $1, last_name = $2, username = $3, favorite_type = $4, email = $5, funds_avail = $6, password = $7
+    WHERE customer_id = $8
     RETURNING *;`;
 
-  db.one(query)
+  db.one(query, values)
     .then((data) => {
       //updating profile
       res.redirect(`/logout?error=false&message=${encodeURIComponent("Successfully update profile. Please login again.")}`);
@@ -570,7 +591,7 @@ app.post('/edit_profile', async (req, res) => {
       //failing to update profile
       res.redirect(`/profile?error=true&message=${encodeURIComponent("Failed to update profile information")}`);
       return console.log(err);
-    }); 
+    });
 });
 
 // Email Api
@@ -578,8 +599,8 @@ app.post('/edit_profile', async (req, res) => {
 async function sendEmail(username, email) {
   const data = JSON.stringify({
     "Messages": [{
-      "From": {"Email": "sadr1181@colorado.edu", "Name": "Hat Hub"},
-      "To": [{"Email": email, "Name": username}],
+      "From": { "Email": "sadr1181@colorado.edu", "Name": "Saul" },
+      "To": [{ "Email": email, "Name": username }],
       "Subject": "Hat Hub Purchase",
       "TextPart": "Thank you for choosing Hat Hub. Your order was successfully placed and will arrive soon!"
     }]
@@ -589,8 +610,8 @@ async function sendEmail(username, email) {
     method: 'post',
     url: 'https://api.mailjet.com/v3.1/send',
     data: data,
-    headers: {'Content-Type': 'application/json'},
-    auth: {username: 'ca8b49fd4eba3dc0c6c9e14f2451acf1', password: 'a1f1f3d498a0d2c23a09f87fe75c8197'},
+    headers: { 'Content-Type': 'application/json' },
+    auth: { username: 'ca8b49fd4eba3dc0c6c9e14f2451acf1', password: 'a1f1f3d498a0d2c23a09f87fe75c8197' },
   };
 
   return axios(config)
