@@ -110,9 +110,10 @@ app.post('/register', async (req, res) => {
   const newCartId = newCartResult.cart_id;
 
   //Insert username and hashed password into the 'users' table
-  const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, email, cart_id) VALUES (DEFAULT, '${req.body.first_name}', '${req.body.last_name}', '${req.body.username}', '${hash}', 100.00, '${req.body.favorite_type}', '${req.body.email}', ${newCartId})  RETURNING *;`;
+  const query = `INSERT INTO customers (customer_id, first_name, last_name, username, password, funds_avail, favorite_type, email, cart_id) VALUES (DEFAULT, $1, $2, $3, $4, 100.00, $5, $6, $7)  RETURNING *;`;
+  const values = [req.body.first_name, req.body.last_name, req.body.username, hash, req.body.favorite_type, req.body.email, newCartId];
   if (req.body.username != "") {
-    db.one(query)
+    db.one(query, values)
       .then((data) => {
         res.redirect('/login');
       })
@@ -250,18 +251,21 @@ app.post("/cart/add", async (req, res) => {
 
   if (quantity > 0) {
     // Check if the item already exists in the cart
-    const checkQuery = `SELECT * FROM cart_lines WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
-    const existingItem = await db.oneOrNone(checkQuery);
+    const checkQuery = `SELECT * FROM cart_lines WHERE cart_id = $1 AND item_id = $2;`;
+    const checkValues = [cart_id, item_id];
+    const existingItem = await db.oneOrNone(checkQuery, checkValues);
 
     if (existingItem) {
       // Update the quantity of the existing item
       const newQuantity = existingItem.quantity + quantity;
-      const updateQuery = `UPDATE cart_lines SET quantity = ${newQuantity} WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
-      await db.none(updateQuery);
+      const updateValues = [newQuantity, cart_id, item_id];
+      const updateQuery = `UPDATE cart_lines SET quantity = $1 WHERE cart_id = $2 AND item_id = $3;`;
+      await db.none(updateQuery, updateValues);
     } else {
       // Insert the new item
-      const insertQuery = `INSERT INTO cart_lines (line_id, cart_id, item_id, quantity) VALUES (DEFAULT, ${cart_id}, ${item_id}, ${quantity});`;
-      await db.none(insertQuery);
+      const insertValues = [cart_id, item_id, quantity];
+      const insertQuery = `INSERT INTO cart_lines (line_id, cart_id, item_id, quantity) VALUES (DEFAULT, $1, $2, $3);`;
+      await db.none(insertQuery, insertValues);
     }
     //redirect to updated cart
     res.redirect(`/items?error=false&message=${encodeURIComponent("Successfully updated cart")}`);
@@ -275,9 +279,10 @@ app.post("/cart/add", async (req, res) => {
 app.post("/cart/delete", (req, res) => {
   const item_id = parseInt(req.body.item_id);
   const cart_id = parseInt(req.session.user.cart_id);
-  const query = `DELETE FROM cart_lines WHERE cart_id = ${cart_id} AND item_id = ${item_id};`;
+  const values = [cart_id, item_id];
+  const query = `DELETE FROM cart_lines WHERE cart_id = $1 AND item_id = $2;`;
 
-  db.one(query)
+  db.one(query, values)
     .then((data) => {
       //if successful, redirect to cart with success message
       res.redirect(`/cart?error=false&message=${encodeURIComponent("Successfully deleted from cart")}`);
@@ -291,13 +296,15 @@ app.post("/cart/delete", (req, res) => {
 //getting the contents of cart
 app.get("/cart", async (req, res) => {
   try {
-    const cartQuery = `SELECT * FROM items INNER JOIN cart_lines ON items.item_id = cart_lines.item_id WHERE cart_id = ${req.session.user.cart_id}`;
-    const savedForLaterQuery = `SELECT * FROM items INNER JOIN saved_for_later ON items.item_id = saved_for_later.item_id WHERE customer_id = ${req.session.user.customer_id}`;
+    const cartValues = [req.session.user.cart_id];
+    const savedValues = [req.session.user.customer_id];
+    const cartQuery = `SELECT * FROM items INNER JOIN cart_lines ON items.item_id = cart_lines.item_id WHERE cart_id = $1`;
+    const savedForLaterQuery = `SELECT * FROM items INNER JOIN saved_for_later ON items.item_id = saved_for_later.item_id WHERE customer_id = $1`;
 
     //querying for cart and saved for later contents
     const [cartData, savedForLaterData] = await Promise.all([
-      db.any(cartQuery),
-      db.any(savedForLaterQuery)
+      db.any(cartQuery, cartValues),
+      db.any(savedForLaterQuery, savedValues)
     ]);
 
     //rendering cart page with cart and saved contents
@@ -326,12 +333,14 @@ app.post("/cart/move-to-cart", async (req, res) => {
 
   try {
     //deleting saved for later items
-    const removeFromSavedQuery = `DELETE FROM saved_for_later WHERE customer_id = ${customer_id} AND item_id = ${item_id};`;
-    await db.none(removeFromSavedQuery);
+    const removeValues = [customer_id, item_id];
+    const removeFromSavedQuery = `DELETE FROM saved_for_later WHERE customer_id = $1 AND item_id = $2;`;
+    await db.none(removeFromSavedQuery, removeValues);
 
     //inserting into the customer cart
-    const addToCartQuery = `INSERT INTO cart_lines (cart_id, item_id, quantity) VALUES (${req.session.user.cart_id}, ${item_id}, 1) RETURNING *;`;
-    await db.one(addToCartQuery);
+    const addValues = [req.session.user.cart_id, item_id];
+    const addToCartQuery = `INSERT INTO cart_lines (cart_id, item_id, quantity) VALUES ($1, $2, 1) RETURNING *;`;
+    await db.one(addToCartQuery, addValues);
 
     //redirecting to cart
     res.redirect("/cart");
@@ -350,8 +359,9 @@ app.post("/cart/delete-saved-item", async (req, res) => {
   try {
 
     //deleting the saved item
-    const deleteFromSavedQuery = `DELETE FROM saved_for_later WHERE customer_id = ${customer_id} AND item_id = ${item_id};`;
-    await db.none(deleteFromSavedQuery);
+    const deleteValues = [customer_id, item_id];
+    const deleteFromSavedQuery = `DELETE FROM saved_for_later WHERE customer_id = $1 AND item_id = $2;`;
+    await db.none(deleteFromSavedQuery, deleteValues);
 
     //redirecting to cart
     res.redirect("/cart");
@@ -370,12 +380,14 @@ app.post("/cart/save-for-later", async (req, res) => {
   try {
 
     //removing item from cart
-    const removeFromCartQuery = `DELETE FROM cart_lines WHERE cart_id = ${req.session.user.cart_id} AND item_id = ${item_id};`;
-    await db.none(removeFromCartQuery);
+    const cartRemValues = [req.session.user.cart_id, item_id];
+    const removeFromCartQuery = `DELETE FROM cart_lines WHERE cart_id = $1 AND item_id = $2;`;
+    await db.none(removeFromCartQuery, cartRemValues);
 
     //adding to saved later
-    const addToSavedQuery = `INSERT INTO saved_for_later (customer_id, item_id, quantity) VALUES (${customer_id}, ${item_id}, 1) RETURNING *;`;
-    await db.one(addToSavedQuery);
+    const savedForValues = [customer_id, item_id];
+    const addToSavedQuery = `INSERT INTO saved_for_later (customer_id, item_id, quantity) VALUES ($1, $2, 1) RETURNING *;`;
+    await db.one(addToSavedQuery, savedForValues);
 
     //redirecting to cart
     res.redirect("/cart");
@@ -390,10 +402,11 @@ app.post("/cart/save-for-later", async (req, res) => {
 app.post("/orders/create", async (req, res) => {
 
   //calculating item cost to deduct from user amount
+  const costValues = [req.session.user.cart_id];
   const itemCostQuery = `SELECT items.item_price, cart_lines.quantity FROM items JOIN cart_lines ON cart_lines.item_id = items.item_id
-  WHERE cart_lines.cart_id = ${req.session.user.cart_id};`
+  WHERE cart_lines.cart_id = $1;`
 
-  const itemCosts = await db.any(itemCostQuery);
+  const itemCosts = await db.any(itemCostQuery, costValues);
   var orderTotal = 0;
 
   //fail to create order if insufficient funds
@@ -405,10 +418,11 @@ app.post("/orders/create", async (req, res) => {
     //else create order with current date and shipping info
     const currentDate = new Date().toDateString();
     const parsedZip = parseInt(req.body.shipping_zip);
-    const createOrderQuery = `INSERT INTO orders (order_id, order_date, shipping_address, shipping_city, shipping_state, shipping_country, shipping_zip, order_total, cart_id) VALUES (DEFAULT, '${currentDate}', '${req.body.shipping_address}', '${req.body.shipping_city}', '${req.body.shipping_state}', '${req.body.shipping_country}', ${parsedZip}, ${orderTotal}, ${req.session.user.cart_id}) RETURNING *;`;
+    const orderValues = [currentDate, req.body.shipping_address, req.body.shipping_city, req.body.shipping_state, req.body.shipping_country, parsedZip, orderTotal, req.session.user.cart_id];
+    const createOrderQuery = `INSERT INTO orders (order_id, order_date, shipping_address, shipping_city, shipping_state, shipping_country, shipping_zip, order_total, cart_id) VALUES (DEFAULT, $1, $2, $3, $4, $5, $6, $7, $8) RETURNING *;`;
 
     var newOrderId = 0;
-    await db.any(createOrderQuery)
+    await db.any(createOrderQuery, orderValues)
       .then((data) => {
         newOrderId = data[0].order_id;
       })
@@ -418,8 +432,9 @@ app.post("/orders/create", async (req, res) => {
       });
 
     //create the order lines linking items to order
-    const itemsQuery = `INSERT INTO order_lines (order_id, item_id, quantity) SELECT ${newOrderId}, item_id, quantity FROM cart_lines WHERE cart_id = ${req.session.user.cart_id};`;
-    await db.any(itemsQuery)
+    const orderLineValues = [newOrderId, req.session.user.cart_id];
+    const itemsQuery = `INSERT INTO order_lines (order_id, item_id, quantity) SELECT $1, item_id, quantity FROM cart_lines WHERE cart_id = $2;`;
+    await db.any(itemsQuery, orderLineValues)
       .then((data) => {
         console.log("added order lines");
       })
@@ -429,8 +444,9 @@ app.post("/orders/create", async (req, res) => {
       });
 
     //deleting from the cart after adding to order
-    const deleteQuery = `DELETE FROM cart_lines WHERE cart_id = ${req.session.user.cart_id};`;
-    await db.any(deleteQuery)
+    const deleteCartValues = [req.session.user.cart_id];
+    const deleteQuery = `DELETE FROM cart_lines WHERE cart_id = $1;`;
+    await db.any(deleteQuery, deleteCartValues)
       .then((data) => {
         //subtract from user total
         req.session.user.funds_avail -= orderTotal;
@@ -448,13 +464,15 @@ app.post("/orders/create", async (req, res) => {
 
 //delete an order
 app.post("/orders/delete", async (req, res) => {
-  const linesQuery = `DELETE FROM order_lines WHERE order_id = ${req.body.order_id};`;
-  const orderQuery = `DELETE FROM orders WHERE order_id = ${req.body.order_id};`;
+  const orderValues = [req.body.order_id];
+  const linesQuery = `DELETE FROM order_lines WHERE order_id = $1;`;
+  const orderQuery = `DELETE FROM orders WHERE order_id = $1;`;
 
-  await db.any(linesQuery);
+  //remove order lines first
+  await db.any(linesQuery, orderValues);
 
   //querying to remove order
-  db.any(orderQuery)
+  db.any(orderQuery, orderValues)
     .then((data) => {
       res.redirect(`/orders?error=false&message=${encodeURIComponent("Successfully removed order")}`);
     })
@@ -466,9 +484,10 @@ app.post("/orders/delete", async (req, res) => {
 
 //getting orders
 app.get("/orders", (req, res) => {
-  const query = `SELECT * FROM orders WHERE cart_id = ${req.session.user.cart_id};`;
+  const values = [req.session.user.cart_id];
+  const query = `SELECT * FROM orders WHERE cart_id = $1;`;
 
-  db.any(query)
+  db.any(query, values)
     .then((data) => {
       //rendering orders page with data
       res.render("pages/orders", {
@@ -552,17 +571,18 @@ app.post('/edit_profile', async (req, res) => {
     password = await bcrypt.hash(req.body.password, 10);
   }
   else {
-    const passQuery = await db.one(`SELECT password FROM customers WHERE username = '${req.session.user.username}';`);
+    const passQuery = await db.one(`SELECT password FROM customers WHERE username = $1;`, [req.session.user.username]);
     password = passQuery.password;
   }
 
   //querying database
+  const values = [first_name, last_name, username, favorite_type, email, funds_avail, password, req.session.user.customer_id];
   const query = `UPDATE customers 
-    SET first_name = '${first_name}', last_name = '${last_name}', username = '${username}', favorite_type = '${favorite_type}', email = '${email}', funds_avail = ${funds_avail}, password = '${password}'
-    WHERE customer_id = '${req.session.user.customer_id}'
+    SET first_name = $1, last_name = $2, username = $3, favorite_type = $4, email = $5, funds_avail = $6, password = $7
+    WHERE customer_id = $8
     RETURNING *;`;
 
-  db.one(query)
+  db.one(query, values)
     .then((data) => {
       //updating profile
       res.redirect(`/logout?error=false&message=${encodeURIComponent("Successfully update profile. Please login again.")}`);
