@@ -472,14 +472,14 @@ input:-webkit-autofill:active{
                 <form action = "/orders/create" method = "POST">
                         <div class="field field_v1">
                           <label for="shipping_address" class="ha-screen-reader">Shipping Address</label>
-                          <input name = "shipping_address" id="shipping_address" class="field__input" placeholder="Ex: 123 Main St.">
+                          <input name = "shipping_address" id="shipping_address" class="field__input" placeholder="Ex: 123 Main St." required>
                           <span class="field__label-wrap" aria-hidden="true">
                             <span class="field__label">Shipping Address</span>
                           </span>
                         </div>
                         <div class="field field_v1">
                             <label for="shipping_city" class="ha-screen-reader">Shipping City</label>
-                            <input name="shipping_city" id="shipping_city" class="field__input" placeholder="Ex: New York City">
+                            <input name="shipping_city" id="shipping_city" class="field__input" placeholder="Ex: New York City" required>
                             <span class="field__label-wrap" aria-hidden="true">
                               <span class="field__label">Shipping City</span>
                             </span>
@@ -487,21 +487,21 @@ input:-webkit-autofill:active{
                         <br>
                         <div class="field field_v1">
                             <label for="shipping_zip" class="ha-screen-reader">Shipping Zip</label>
-                            <input name="shipping_zip" id="shipping_zip" class="field__input" placeholder="Ex: 12345">
+                            <input name="shipping_zip" id="shipping_zip" class="field__input" placeholder="Ex: 12345" required>
                             <span class="field__label-wrap" aria-hidden="true">
                               <span class="field__label">Shipping Zip</span>
                             </span>
                           </div>
                         <div class="field field_v1">
                             <label for="shipping_state" class="ha-screen-reader">Shipping State</label>
-                            <input name="shipping_state" id="shipping_state" class="field__input" placeholder="Ex: New York">
+                            <input name="shipping_state" id="shipping_state" class="field__input" placeholder="Ex: New York" required>
                             <span class="field__label-wrap" aria-hidden="true">
                               <span class="field__label">Shipping State</span>
                             </span>
                           </div>
                           <div class="field field_v1">
                             <label for="shipping_country" class="ha-screen-reader">Shipping Country</label>
-                            <input name="shipping_country" id="shipping_country" class="field__input" placeholder="Ex: USA">
+                            <input name="shipping_country" id="shipping_country" class="field__input" placeholder="Ex: USA" required>
                             <span class="field__label-wrap" aria-hidden="true">
                               <span class="field__label">Shipping Country</span>
                             </span>
