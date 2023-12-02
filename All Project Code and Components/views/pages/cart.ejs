@@ -2,20 +2,380 @@
 <%- include ('../partials/head') %> 
 <%- include ('../partials/loggedmenu') %>
 <%- include ('../partials/message') %>
+<style>
+    @charset "UTF-8";
+    @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
+    
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "segoe ui", roboto, oxygen, ubuntu, cantarell, "fira sans", "droid sans", "helvetica neue", Arial, sans-serif;
+      font-weight: 300;
+      line-height: 1.42em;
+      color:#0E1119;
+      background: #43C6AC;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #F8FFAE, #43C6AC);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #F8FFAE, #43C6AC); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    }
+    .grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+    h2{
+        font-family: -apple-system, BlinkMacSystemFont, "segoe ui", roboto, oxygen, ubuntu, cantarell, "fira sans", "droid sans", "helvetica neue", Arial, sans-serif;
+      font-weight: 300;
+      line-height: 2em;
+      color:#0E1119;
+    }
+    .container td {
+        font-weight: 550;
+          font-size: 1.05em;
+      -webkit-box-shadow: 0 2px 2px -2px #0E1119;
+           -moz-box-shadow: 0 2px 2px -2px #0E1119;
+                box-shadow: 0 2px 2px -2px #0E1119;
+    }
+    
+    .container {
+          text-align: center;
+          overflow: hidden;
+          width: 90%;
+          margin: 0 auto;
+      display: table;
+      padding: 0 0 8em 0;
+    }
+    
+    .container td, .container th {
+          padding-bottom: 2%;
+          padding-top: 2%;
+      padding-left:0%;  
+    }
+    
+    .container th {
+          /* background-color: #1F2739; */
+          color: #0E1119;
+          font-size: large;
+    } 
+    
+    .container td:first-child { color: #FB667A; }
+    
+    .container tr:hover {
+       background-color: #B9E3C6;
+    -webkit-box-shadow: 0 6px 6px -6px #0E1119;
+           -moz-box-shadow: 0 6px 6px -6px #0E1119;
+                box-shadow: 0 6px 6px -6px #0E1119;
+    }
+    
+    .container td:hover {
+      background-color: #464a5200;
+      color: #0E1119;
+      font-weight: bold;
+      font-size: larger;
+      /* box-shadow: #7F7C21 -1px 1px, #7F7C21 -2px 2px, #7F7C21 -3px 3px, #7F7C21 -4px 4px, #7F7C21 -5px 5px, #7F7C21 -6px 6px; */
+      /* transform: translate3d(10px, -10px, 0); */
+      
+      transition-delay: 0s;
+          transition-duration: .5s;
+          transition-property: all;
+      transition-timing-function: line;
+    }
+    
+    @media (max-width: 800px) {
+    .container td:nth-child(4),
+    .container th:nth-child(4) { display: none; }
+    }
+/* order button */
+.button-28 {
+  appearance: none;
+  background-color: transparent;
+  border: 2px solid #1A1A1A;
+  border-radius: 15px;
+  box-sizing: border-box;
+  color: #3B3B3B;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-size: 16px;
+  font-weight: 600;
+  line-height: normal;
+  margin: 0;
+  min-height: 60px;
+  min-width: 0;
+  outline: none;
+  padding: 16px 24px;
+  text-align: center;
+  text-decoration: none;
+  transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  width: 15%;
+  will-change: transform;
+}
 
+.button-28:disabled {
+  pointer-events: none;
+}
+
+.button-28:hover {
+  color: #fff;
+  background-color: #1A1A1A;
+  box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+  transform: translateY(-2px);
+}
+
+.button-28:active {
+  box-shadow: none;
+  transform: translateY(0);
+}
+/* rejection button */
+.button-24 {
+  background: initial;
+  border: 2px solid #FF4742;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  box-sizing: border-box;
+  color: #000000;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  min-height: 40px;
+  outline: 0;
+  padding: 12px 14px;
+  text-align: center;
+  text-rendering: geometricprecision;
+  text-transform: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+  transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+
+}
+
+.button-24:hover,
+.button-24:active {
+  background-color: #FF4742;
+  background-position: 1 1;
+  color: black;
+  box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+  transform: translateY(-2px);
+}
+
+.button-24:active {
+  opacity: .5;
+}
+
+/* acceptance button */
+.button-23 {
+  background: initial;
+  border: 2px solid #4FB0C6;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  box-sizing: border-box;
+  color: black;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 16px;
+  min-height: 40px;
+  outline: 0;
+  padding: 12px 14px;
+  text-align: center;
+  text-rendering: geometricprecision;
+  text-transform: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+  transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
+
+}
+
+.button-23:hover,
+.button-23:active {
+  background-color: #4FB0C6;
+  background-position: 0 0;
+  color: black;
+  box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+  transform: translateY(-2px);
+}
+
+.button-23:active {
+  opacity: .5;
+}
+/* below is the order form */
+.ha-screen-reader{
+  width: var(--ha-screen-reader-width, 1px);
+  height: var(--ha-screen-reader-height, 1px);
+  padding: var(--ha-screen-reader-padding, 0);
+  border: var(--ha-screen-reader-border, none);
+
+  position: var(--ha-screen-reader-position, absolute);
+  clip: var(--ha-screen-reader-clip, rect(1px, 1px, 1px, 1px));
+  overflow: var(--ha-screen-reader-overflow, hidden);
+}
+
+
+.field__input{ 
+  --uiFieldPlaceholderColor: var(--fieldPlaceholderColor, black);
+  
+  background-color: transparent;
+  border-radius: 0;
+  border: none;
+
+
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.field__input:focus::-webkit-input-placeholder{
+  color: black;
+}
+
+.field__input:focus::-moz-placeholder{
+  color: black;
+}
+
+.field{
+  --uiFieldBorderWidth: var(--fieldBorderWidth, 2px);
+  --uiFieldPaddingRight: var(--fieldPaddingRight, 1rem);
+  --uiFieldPaddingLeft: var(--fieldPaddingLeft, 1rem);   
+  --uiFieldBorderColorActive: var(--fieldBorderColorActive, rgba(22, 22, 22, 1));
+
+  display: var(--fieldDisplay, inline-flex);
+  position: relative;
+  font-size: var(--fieldFontSize, 1rem);
+}
+
+.field__input{
+  box-sizing: border-box;
+  width: var(--fieldWidth, 100%);
+  height: var(--fieldHeight, 3rem);
+  padding: var(--fieldPaddingTop, 1.25rem) var(--uiFieldPaddingRight) var(--fieldPaddingBottom, .5rem) var(--uiFieldPaddingLeft);
+  border-bottom: var(--uiFieldBorderWidth) solid var(--fieldBorderColor, rgba(0, 0, 0, .25));  
+  
+}
+
+.field__input:focus{
+  outline: none;
+}
+
+.field__input::-webkit-input-placeholder{
+  opacity: 0;
+  transition: opacity .2s ease-out;
+}
+
+.field__input::-moz-placeholder{
+  opacity: 0;
+  transition: opacity .2s ease-out;
+}
+
+.field__input:focus::-webkit-input-placeholder{
+  opacity: 1;
+  transition-delay: .2s;
+}
+
+.field__input:focus::-moz-placeholder{
+  opacity: 1;
+  transition-delay: .2s;
+}
+
+.field__label-wrap{
+  box-sizing: border-box;
+  pointer-events: none;
+  cursor: text;
+
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.field__label-wrap::after{
+  content: "";
+  box-sizing: border-box;
+  width: 100%;
+  height: 0;
+  opacity: 0;
+
+  position: absolute;
+  bottom: 0;
+  left: 0;
+}
+
+.field__input:focus ~ .field__label-wrap::after{
+  opacity: 1;
+}
+
+.field__label{
+  position: absolute;
+  left: var(--uiFieldPaddingLeft);
+  top: calc(50% - .5em);
+
+  line-height: 1;
+  font-size: var(--fieldHintFontSize, inherit);
+  font-weight: 600;
+
+  transition: top .2s cubic-bezier(0.9, -0.15, 0.1, 1.15), opacity .2s ease-out, font-size .2s ease-out;
+  
+}
+
+.field__input:focus ~ .field__label-wrap .field__label,
+.field__input:not(:placeholder-shown) ~ .field__label-wrap .field__label{
+  --fieldHintFontSize: var(--fieldHintFontSizeFocused, 1rem);
+
+  top: var(--fieldHintTopHover, .1rem);
+  
+}
+
+
+.field_v1 .field__label-wrap::after{
+  border-bottom: var(--uiFieldBorderWidth) solid var(--uiFieldBorderColorActive);
+  transition: opacity .2s ease-out;
+  
+}
+
+.field{
+  --fieldBorderColor: black;
+  --fieldBorderColorActive: black;
+  
+}
+
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus, 
+input:-webkit-autofill:active{
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: black;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: 400;
+    box-shadow: inset 0 0 0 20px 20px #23232329;
+}
+
+    </style>
 
         <main>
-            <div class="container">
-                <table class="table">
+          <div class="grid-container">
+          <div class="container">
+                <h2>Your Cart</h2>
+                <table class="container" style="background-color:rgba(0, 0, 0, 0);">
                     <thead>
                         <tr>
                             <!--Table headers-->
                             <th>Hat Name</th>
                             <th>Hat Type</th>
                             <th>Description</th>
-                            <th>Price (in $USD)</th>
-                            <th>Quantity in Cart</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
                             <th>Image</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -39,18 +399,19 @@
                                 </td>
                                 <!--delete from cart and save for later forms-->
                                 <td>
-                                    <img src = "<%- cart_line.item_image_link%>" alt = "<%- cart_line.item_name%>" width = "200" height = "200">
+                                    <img src = "<%- cart_line.item_image_link%>" alt = "<%- cart_line.item_name%>" width = "75" height = "75">
                                 </td>
-                                <form action = "/cart/delete" method = "POST">
-                                <input hidden name = "item_id" value = "<%- cart_line.item_id%>">
                                 <td>
-                                    <button type = "submit" class = "btn-primary">Delete from Cart</button></td>    
-                                </form>
-                                <td>
+                                                                    
                                     <form action="/cart/save-for-later" method="POST">
                                         <input type="hidden" name="item_id" value="<%- cart_line.item_id %>">
-                                        <button type="submit" class="btn-primary">Save For Later</button>
+                                        <button type="submit" class="button-23">Save For Later</button>
                                     </form>
+                                    <p style="margin:10px;"></p>
+                                <form action = "/cart/delete" method = "POST">
+                                <input hidden name = "item_id" value = "<%- cart_line.item_id%>">
+                                    <button type = "submit" class = "button-24">Delete from Cart</button>    
+                                </form>
                                 </td>
                             </tr>
                             <% }); %>
@@ -61,7 +422,7 @@
             <!-- NEW CHANGES FOR SAVED FOR LATER -->
             <div class="container">
                 <h2>Saved For Later</h2>
-                <table class="table">
+                <table class="container" style="background-color:rgba(0, 0, 0, 0);">
                     <thead>
                         <tr>
                             <!--table headers-->
@@ -87,42 +448,73 @@
                                     <!--foorms for moving to cart or deleting saved for later-->
                                     <form action="/cart/move-to-cart" method="POST">
                                         <input type="hidden" name="item_id" value="<%= item.item_id %>">
-                                        <button type="submit" class="btn-primary">Move to Cart</button>
+                                        <button type="submit" class="button-23">Move to Cart</button>
                                     </form>
+                                    <p style="margin:10px;"></p>
                                     <form action="/cart/delete-saved-item" method="POST">
                                         <input type="hidden" name="item_id" value="<%= item.item_id %>">
-                                        <button type="submit" class="btn-danger">Delete Item</button>
+                                        <button type="submit" class="button-24">Delete Item</button>
                                     </form>
                                 </td>
                                 <td>
-                                    <img src="<%- item.item_image_link %>" alt="<%- item.item_name %>" width="200" height="200">
+                                    <img src="<%- item.item_image_link %>" alt="<%- item.item_name %>" width="75" height="75">
                                 </td>
                             </tr>
                         <% }); %>
                     </tbody>
                 </table>
             </div>
+          </div>
             <!-- if cart lines are greater than 0, display form for posting an order-->
         <% if(cart_lines.length > 0) { %>
             <div class = "container text-center">
+              <h2>Order Specifics</h2>
                 <form action = "/orders/create" method = "POST">
-                    <label for="shipping_address" class="form-label">Shipping Address</label>
-                    <input type = "text" id = "shipping_address" name = "shipping_address" placeholder = "Ex: 123 Main St."/>
-                    <label for="shipping_city" class="form-label">Shipping City</label>
-                    <input type = "text" id = "shipping_city" name = "shipping_city" placeholder = "Ex: New York City"/>
-                    <label for="shipping_state" class="form-label">Shipping State</label>
-                    <input type = "text" id = "shipping_state" name = "shipping_state" placeholder = "Ex: New York"/>
-                    <label for="shipping_country" class="form-label">Shipping Country</label>
-                    <input type = "text" id = "shipping_country" name = "shipping_country" placeholder = "Ex: USA"/>
-                    <label for="shipping_zip" class="form-label">Shipping Zip</label>
-                    <input type = "text" id = "shipping_zip" name = "shipping_zip" placeholder = "Ex: 12345"/>
-
-                    <button type = "submit" class = "btn-primary">Place Order</button>
+                        <div class="field field_v1">
+                          <label for="shipping_address" class="ha-screen-reader">Shipping Address</label>
+                          <input name = "shipping_address" id="shipping_address" class="field__input" placeholder="Ex: 123 Main St.">
+                          <span class="field__label-wrap" aria-hidden="true">
+                            <span class="field__label">Shipping Address</span>
+                          </span>
+                        </div>
+                        <div class="field field_v1">
+                            <label for="shipping_city" class="ha-screen-reader">Shipping City</label>
+                            <input name="shipping_city" id="shipping_city" class="field__input" placeholder="Ex: New York City">
+                            <span class="field__label-wrap" aria-hidden="true">
+                              <span class="field__label">Shipping City</span>
+                            </span>
+                          </div>
+                        <br>
+                        <div class="field field_v1">
+                            <label for="shipping_zip" class="ha-screen-reader">Shipping Zip</label>
+                            <input name="shipping_zip" id="shipping_zip" class="field__input" placeholder="Ex: 12345">
+                            <span class="field__label-wrap" aria-hidden="true">
+                              <span class="field__label">Shipping Zip</span>
+                            </span>
+                          </div>
+                        <div class="field field_v1">
+                            <label for="shipping_state" class="ha-screen-reader">Shipping State</label>
+                            <input name="shipping_state" id="shipping_state" class="field__input" placeholder="Ex: New York">
+                            <span class="field__label-wrap" aria-hidden="true">
+                              <span class="field__label">Shipping State</span>
+                            </span>
+                          </div>
+                          <div class="field field_v1">
+                            <label for="shipping_country" class="ha-screen-reader">Shipping Country</label>
+                            <input name="shipping_country" id="shipping_country" class="field__input" placeholder="Ex: USA">
+                            <span class="field__label-wrap" aria-hidden="true">
+                              <span class="field__label">Shipping Country</span>
+                            </span>
+                          </div>
+                    <br>
+                    <br>
+                    <button type = "submit" class = "button-28">Place Order</button>
                     
 
                 </form>
             </div>
             <% } %>
+   
         </main>
 
         <%- include ('../partials/footer') %>

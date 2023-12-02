@@ -75,7 +75,45 @@ background: linear-gradient(to right, #DD2476, #FF512F); /* W3C, IE 10+/ Edge, F
 	  transition-property: all;
   transition-timing-function: line;
 }
+.button-23 {
+  background: initial;
+  border: 2px solid #94BFA7;
+  border-radius: 6px;
+  box-shadow: rgba(0, 0, 0, 0.1) 1px 2px 4px;
+  box-sizing: border-box;
+  color: black;
+  cursor: pointer;
+  display: inline-block;
+  font-family: Roobert,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 16px;
+  min-height: 40px;
+  outline: 0;
+  padding: 12px 14px;
+  text-align: center;
+  text-rendering: geometricprecision;
+  text-transform: none;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  vertical-align: middle;
+  transition: all 300ms cubic-bezier(.23, 1, 0.32, 1);
 
+}
+
+.button-23:hover,
+.button-23:active {
+  background-color: #94BFA7;
+  background-position: 0 0;
+  color: black;
+  box-shadow: rgba(0, 0, 0, 0.25) 0 8px 15px;
+  transform: translateY(-2px);
+}
+
+.button-23:active {
+  opacity: .5;
+}
 @media (max-width: 800px) {
 .container td:nth-child(4),
 .container th:nth-child(4) { display: none; }
@@ -117,7 +155,8 @@ background: linear-gradient(to right, #DD2476, #FF512F); /* W3C, IE 10+/ Edge, F
                                 <td>
                                     <input type = "number" id = "quantity" name = "quantity" min = "1" max = "50" value = "1"/>
                                     <br>
-                                    <button type = "submit" class = "btn-primary">Add to Cart</button></td>    
+                                    <p style="margin:10px;"></p>
+                                    <button type = "submit" class = "button-23">Add to Cart</button></td>    
                                 </td>    
                                 </form>
                             </tr>

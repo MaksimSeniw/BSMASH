@@ -32,9 +32,9 @@ CREATE TABLE orders(
   order_date VARCHAR(1000),
   shipping_address VARCHAR(1000),
   shipping_city VARCHAR(1000),
+  shipping_zip INT,
   shipping_state VARCHAR(1000),
   shipping_country VARCHAR(1000),
-  shipping_zip INT,
   order_total DECIMAL(6,2),
   cart_id INT
 );

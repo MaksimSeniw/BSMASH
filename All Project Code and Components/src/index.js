@@ -599,9 +599,9 @@ app.post('/edit_profile', async (req, res) => {
 async function sendEmail(username, email) {
   const data = JSON.stringify({
     "Messages": [{
-      "From": { "Email": "sadr1181@colorado.edu", "Name": "Saul" },
+      "From": { "Email": "sadr1181@colorado.edu", "Name": "Hat Hub" },
       "To": [{ "Email": email, "Name": username }],
-      "Subject": "Hat Hub Purchase",
+      "Subject": "Your Hat Hub Purchase",
       "TextPart": "Thank you for choosing Hat Hub. Your order was successfully placed and will arrive soon!"
     }]
   });
@@ -623,7 +623,6 @@ async function sendEmail(username, email) {
     });
 
 }
-
 
 // *****************************************************
 // <!-- Section 5 : Start Server-->
