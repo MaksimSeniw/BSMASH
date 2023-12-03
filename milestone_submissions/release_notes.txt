@@ -1,0 +1,80 @@
+Release Notes 11/6/23:
+
+!--New Features--!
+- Created the items database
+- Created the ERD for the database
+- Set up project directory structure
+- Created the docker compose file
+
+!--Bug fixes--!
+
+- None
+
+--------------------------------------------------------------------------------------
+
+Release Notes 11/13/23:
+
+!--New Features--!
+- Inserted items into the database
+- Created login page
+- Created register page
+- Added unit tests
+
+!--Bug fixes--!
+- Fixed syntax errors in create.sql
+- Fixed formatting issues within login and register pages
+
+--------------------------------------------------------------------------------------
+
+Release Notes 11/20/23:
+
+!--New Features--!
+- Items page created
+- Cart page created
+- User Acceptance Testing documentation filled
+- New navigation bar with new pages
+
+!--Bug Fixes--!
+- Resolved unit testing errors when redirecting
+- Fixed issue where site crashes when trying to log in as a user not in the database
+- Resolved bug where adding same hat to cart would create a new instance instead of 
+    adding to the existing instance
+
+--------------------------------------------------------------------------------------
+
+Release Notes 11/27/23:
+
+!--New Features--!
+- Added a profile page
+- Added an orders page
+- Added an ability to edit profile
+- Added ability to delete orders
+- Streamlined UI
+- Added service to email order confirmation
+- Created README
+- Created a 'Save for Later' feature
+
+!--Bug Fixes--!
+- Resolved issue where all traits had to be edited to edit profile rather 
+    than desired traits
+- Resolved bug where website would crash when user omitted a field when
+    placing an order by enforcing requirements for all fields to be filled
+- Edited the UI of pages to make the site more cohesive
+- Added correct documentation
+
+--------------------------------------------------------------------------------------
+
+Release Notes 12/4/23:
+
+!--New Features--!
+- More intricate email service when ordering
+- More hats added to database
+
+!--Bug Fixes--!
+- Security checks for forms on the site (front and back end)
+- Securing SQL queries to prevent SQL injections
+- Enforcing proper routes for acheiving certain edits on the site
+- Editing some buggy UI features that would inhibit proper form usage
+- Resolved some incorrect documentation
+
+--------------------------------------------------------------------------------------

@@ -40,3 +40,19 @@ What we are planning for this week:
 
 What challenges we are facing:
 -Criteria for final presentations, and project report
+
+12/4:
+
+What we have done:
+-Finished majority of UI improvements
+-Added all of our desired security checks on the site
+-Updated incorrect documentation
+-Deployed our application on azure
+-Started work on the presentation and project report
+
+What we are planning for this week:
+-Wrapping up our project presentation and report
+-Final UI edits
+
+What challenges we are facing:
+-None
