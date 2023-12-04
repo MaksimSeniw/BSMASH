@@ -1,0 +1,227 @@
+<%- include ('../partials/head') %>
+<%- include ('../partials/loggedmenu') %>
+<style>
+@charset "UTF-8";
+    @import url(https://fonts.googleapis.com/css?family=Open+Sans:300,400,700);
+    
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "segoe ui", roboto, oxygen, ubuntu, cantarell, "fira sans", "droid sans", "helvetica neue", Arial, sans-serif;
+      font-weight: 300;
+      line-height: 1.42em;
+      color:#0E1119;
+      background: #0f0c29;  /* fallback for old browsers */
+background: -webkit-linear-gradient(to right, #24243e, #302b63, #0f0c29);  /* Chrome 10-25, Safari 5.1-6 */
+background: linear-gradient(to right, #24243e, #302b63, #0f0c29); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+
+    }
+
+.our-team {
+  padding: 30px 0 40px;
+  margin-bottom: 30px;
+  background-color: #f7f5ec;
+  text-align: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.our-team .picture {
+  display: inline-block;
+  height: 130px;
+  width: 130px;
+  margin-bottom: 50px;
+  z-index: 1;
+  position: relative;
+}
+
+.our-team .picture::before {
+  content: "";
+  width: 100%;
+  height: 0;
+  border-radius: 50%;
+  background-color: #1369ce;
+  position: absolute;
+  bottom: 135%;
+  right: 0;
+  left: 0;
+  opacity: 0.9;
+  transform: scale(3);
+  transition: all 0.3s linear 0s;
+}
+
+.our-team:hover .picture::before {
+  height: 100%;
+}
+
+.our-team .picture::after {
+  content: "";
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: #1369ce;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+}
+
+.our-team .picture img {
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+  transform: scale(1);
+  transition: all 0.9s ease 0s;
+}
+
+.our-team:hover .picture img {
+  box-shadow: 0 0 0 14px #f7f5ec;
+  transform: scale(0.7);
+}
+
+.our-team .title {
+  display: block;
+  font-size: 15px;
+  color: #4e5052;
+  text-transform: capitalize;
+}
+
+.our-team .social {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  background-color: #1369ce;
+  position: absolute;
+  bottom: -100px;
+  left: 0;
+  transition: all 0.5s ease 0s;
+}
+
+.our-team:hover .social {
+  bottom: 0;
+}
+
+.our-team .social li {
+  display: inline-block;
+}
+
+.our-team .social li a {
+  display: block;
+  padding: 10px;
+  font-size: 17px;
+  color: white;
+  transition: all 0.3s ease 0s;
+  text-decoration: none;
+}
+
+.our-team .social li a:hover {
+  color: #1369ce;
+  background-color: #f7f5ec;
+}
+
+</style>
+
+<main>
+    <center><a href="https://github.com/MaksimSeniw/BSMASH" target="_blank" style="color: white; font-size: 20px; 
+    font-family:inherit ;" rel="noopener noreferrer"> REPOSITORY LINK</a></center>
+    <br>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="our-team">
+                  <div class="picture">
+                    <img class="img-fluid" src="https://media.licdn.com/dms/image/D5603AQHhGk4CmtSQ4A/profile-displayphoto-shrink_800_800/0/1698099556456?e=2147483647&v=beta&t=6yG3r_KkSbUsSEBrBZs7Lv0j0ewA8jK0d6H4EQrbD0g">
+                  </div>
+                  <div class="team-content">
+                    <h3 class="name">Blake Raphael</h3>
+                    <h4 class="title">CU Boulder '24</h4>
+                  </div>
+                  <ul class="social">
+                    <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=braphael99@gmail.com" target="_blank" rel="noopener noreferrer" class="fa fa-google" aria-hidden="true"></a></li>
+                    <li><a href="https://www.linkedin.com/in/blake-raphael-441398223/"  target="_blank" rel="noopener noreferrer" class="fa fa-linkedin" aria-hidden="true"></a></li>
+                    <li><a href="https://github.com/braphael99"  target="_blank" rel="noopener noreferrer" class="fa fa-github" aria-hidden="true"></a></li>
+
+                  </ul>
+                </div>
+              </div>
+            <div class="col-lg-6">
+                <div class="our-team">
+                  <div class="picture">
+                    <img class="img-fluid" src="https://media.licdn.com/dms/image/D5603AQHZtB--7accEg/profile-displayphoto-shrink_800_800/0/1691868915600?e=2147483647&v=beta&t=od-ocH-HEDCouNhyFatdbfE-bgFHnnZwRrccAdJV8wI">
+                  </div>
+                  <div class="team-content">
+                    <h3 class="name">Maksim Seniw</h3>
+                    <h4 class="title">CU Boulder '26</h4>
+                  </div>
+                  <ul class="social">
+                    <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=maksimseniw.com"  target="_blank" rel="noopener noreferrer" class="fa fa-google" aria-hidden="true"></a></li>
+                    <li><a href="https://www.linkedin.com/in/maks-seniw/"  target="_blank" rel="noopener noreferrer" class="fa fa-linkedin" aria-hidden="true"></a></li>
+                    <li><a href="https://github.com/MaksimSeniw"  target="_blank" rel="noopener noreferrer" class="fa fa-github" aria-hidden="true"></a></li>
+                  </ul>
+                </div>
+              </div>
+            <div class="col-lg-6">
+            <div class="our-team">
+              <div class="picture">
+                <img class="img-fluid" src="">
+            </div>
+              <div class="team-content">
+                <h3 class="name">Saul Drantch</h3>
+                <h4 class="title">CU Boulder '26</h4>
+              </div>
+              <ul class="social">
+                <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=sadr1181@colorado.edu"  target="_blank" rel="noopener noreferrer" class="fa fa-google" aria-hidden="true"></a></li>
+                <li><a href="https://www.linkedin.com/in/saul-drantch-6882421a3/"  target="_blank" rel="noopener noreferrer" class="fa fa-linkedin" aria-hidden="true"></a></li>
+                <li><a href="https://github.com/SaulD18"  target="_blank" rel="noopener noreferrer" class="fa fa-github" aria-hidden="true"></a></li>
+              </ul>
+            </div>
+          </div>
+              <div class="col-lg-6">
+            <div class="our-team">
+              <div class="picture">
+                <img class="img-fluid" src="">
+            </div>
+              <div class="team-content">
+                <h3 class="name">Streck Salmon</h3>
+                <h4 class="title">CU Boulder '24</h4>
+              </div>
+              <ul class="social">
+                <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=stsa8526@colorado.edu" target="_blank" rel="noopener noreferrer" class="fa fa-google" aria-hidden="true"></a></li>
+                <!-- <li><a href="https://codepen.io/collection/XdWJOQ/" target="_blank" rel="noopener noreferrer" class="fa fa-linkedin" aria-hidden="true"></a></li> -->
+                <li><a href="https://github.com/streckts"  target="_blank" rel="noopener noreferrer" class="fa fa-github" aria-hidden="true"></a></li>
+              </ul>
+            </div>
+          </div>
+              <div class="col-lg-6">
+            <div class="our-team">
+              <div class="picture">
+                <img class="img-fluid" src="">
+            </div>
+              <div class="team-content">
+                <h3 class="name">Hyder Baig</h3>
+                <h4 class="title">CU Boulder '25</h4>
+              </div>
+              <ul class="social">
+                <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=Hyder.Baig@colorado.edu" target="_blank" rel="noopener noreferrer" class="fa fa-google" aria-hidden="true"></a></li>
+                <!-- <li><a href="https://codepen.io/collection/XdWJOQ/" target="_blank" rel="noopener noreferrer" class="fa fa-linkedin" aria-hidden="true"></a></li> -->
+                <li><a href="https://github.com/hyba7589"  target="_blank" rel="noopener noreferrer" class="fa fa-github" aria-hidden="true"></a></li>
+              </ul>
+            </div>
+          </div>
+              <div class="col-lg-6">
+            <div class="our-team">
+              <div class="picture">
+                <img class="img-fluid" src="">
+            </div>
+              <div class="team-content">
+                <h3 class="name">Abdullah Yassine</h3>
+                <h4 class="title">CU Boulder '25</h4>
+              </div>
+              <ul class="social">
+                <li><a href="https://mail.google.com/mail/?view=cm&fs=1&to=abya8749@colorado.edu" target="_blank" rel="noopener noreferrer" class="fa fa-google" aria-hidden="true"></a></li>
+                <!-- <li><a href="https://codepen.io/collection/XdWJOQ/" target="_blank" rel="noopener noreferrer" class="fa fa-linkedin" aria-hidden="true"></a></li> -->
+                <li><a href="https://github.com/abya8749"  target="_blank" rel="noopener noreferrer" class="fa fa-github" aria-hidden="true"></a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+</main>

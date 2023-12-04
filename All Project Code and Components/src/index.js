@@ -593,16 +593,21 @@ app.post('/edit_profile', async (req, res) => {
       return console.log(err);
     });
 });
-
+app.get('/socials', (req, res) => {
+  res.render("pages/socials", {
+    error: req.query.error,
+    message: req.query.message,
+  })
+});
 // Email Api
 
-async function sendEmail(username, email) {
+async function sendEmail(username, email, order_id) {
   const data = JSON.stringify({
     "Messages": [{
-      "From": { "Email": "sadr1181@colorado.edu", "Name": "Hat Hub" },
+      "From": { "Email": "seniwprogramming@gmail.com", "Name": "Hat Hub" },
       "To": [{ "Email": email, "Name": username }],
       "Subject": "Your Hat Hub Purchase",
-      "TextPart": "Thank you for choosing Hat Hub. Your order was successfully placed and will arrive soon!"
+      "TextPart": "Thank you for choosing Hat Hub. Your order was successfully placed and will arrive soon!" 
     }]
   });
 
@@ -611,7 +616,7 @@ async function sendEmail(username, email) {
     url: 'https://api.mailjet.com/v3.1/send',
     data: data,
     headers: { 'Content-Type': 'application/json' },
-    auth: { username: 'ca8b49fd4eba3dc0c6c9e14f2451acf1', password: 'a1f1f3d498a0d2c23a09f87fe75c8197' },
+    auth: { username: '491db0ec1a95b0235c77e8bf679ebaec', password: 'b82eeaafa8f1982a67d760b41f38cfd4' },
   };
 
   return axios(config)
