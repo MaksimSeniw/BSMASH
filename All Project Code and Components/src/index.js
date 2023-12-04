@@ -93,6 +93,21 @@ app.get('/images/:imageName', (req, res) => {
   res.sendFile(imagePath);
 });
 
+//get socials page
+app.get('/socials', (req, res) => {
+  res.render("pages/socials", {
+    error: req.query.error,
+    message: req.query.message,
+  })
+});
+
+app.get('/loggedsocials', (req, res) => {
+  res.render("pages/loggedsocials", {
+    error: req.query.error,
+    message: req.query.message,
+  })
+});
+
 // get register
 app.get('/register', (req, res) => {
   res.render("pages/register", {
@@ -593,12 +608,7 @@ app.post('/edit_profile', async (req, res) => {
       return console.log(err);
     });
 });
-app.get('/socials', (req, res) => {
-  res.render("pages/socials", {
-    error: req.query.error,
-    message: req.query.message,
-  })
-});
+
 // Email Api
 
 async function sendEmail(username, email, order_id) {
