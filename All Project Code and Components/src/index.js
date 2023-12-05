@@ -297,7 +297,7 @@ app.post("/cart/delete", (req, res) => {
   const values = [cart_id, item_id];
   const query = `DELETE FROM cart_lines WHERE cart_id = $1 AND item_id = $2;`;
 
-  db.one(query, values)
+  db.none(query, values)
     .then((data) => {
       //if successful, redirect to cart with success message
       res.redirect(`/cart?error=false&message=${encodeURIComponent("Successfully deleted from cart")}`);
