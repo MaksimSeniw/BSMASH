@@ -1,1 +1,1 @@
-http://recitation-15-team-05.eastus.cloudapp.azure.com:3000/login
+https://recitation-015-group-05.eastus.cloudapp.azure.com/
