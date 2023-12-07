@@ -114,5 +114,7 @@ INSERT INTO items (item_id, item_name, item_type, item_description, item_price, 
   (DEFAULT, 'Conical Hat', 'dress', 'An asian conically-shaped hat', 12.00, 'https://m.media-amazon.com/images/I/71cZ+BVntNL._AC_UY1000_.jpg'),
   (DEFAULT, 'Bucket Hat', 'dress', 'A hat with a downwards brim', 15.00, 'https://media.revolutionrace.com/api/media/image/beafc5ff-ed37-40e5-b75a-40e867007303'),
   (DEFAULT, 'Fire Fighter Hat', 'Costume', 'A hat for your next heat check', 10.000, 'https://cdn.media.amplience.net/i/partycity/911186?$large$&fmt=auto&qlt=default'),
-  (DEFAULT, 'Flat cap', 'Casual', 'A British rounded cap, also known as a paddy cap, a bunnet, and a Dai cap', 15.00, 'https://www.dubarry.com/media/image/e9/c5/e5/987803_1.jpg');
+  (DEFAULT, 'Flat cap', 'Casual', 'A British rounded cap, also known as a paddy cap, a bunnet, and a Dai cap', 15.00, 'https://www.dubarry.com/media/image/e9/c5/e5/987803_1.jpg'),
+  (DEFAULT,'Clown Hat', 'Costume', 'A colorful and funny hat for entertainers', 18.00, 'https://media.istockphoto.com/id/494238567/photo/jester-hat-isolated-on-white.jpg?s=1024x1024&w=is&k=20&c=jUbOphIk8PKwJHqg2JcpC5OaNSIBYsnCibTllRvoaO0='),
+  (DEFAULT, 'Sombrero Vueltiao', 'Costume', 'A traditional Colombian hat with a unique woven pattern', 30.00, 'https://m.media-amazon.com/images/I/81g85G0GVBL._AC_SX679_.jpg');
 
